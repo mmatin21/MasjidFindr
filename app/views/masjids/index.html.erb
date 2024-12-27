@@ -1,0 +1,13 @@
+<!-- app/views/masjids/index.html.erb -->
+<h1>Masjids</h1>
+<ul>
+  <% @masjids.each do |masjid| %>
+    <li>
+      <strong><%= masjid['name'] %></strong>
+      <p><%= masjid['address'] %></p>
+      <p><%= masjid['city'] %></p>
+      <p><%= masjid['state'] %></p>
+      <p><%= masjid['zipcode'] %></p>
+    </li>
+  <% end %>
+</ul>
