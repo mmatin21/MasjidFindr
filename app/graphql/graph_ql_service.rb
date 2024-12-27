@@ -49,4 +49,58 @@ class GraphQlService
     response = Net::HTTP.post(uri, query.to_json, "Content-Type" => "application/json")
     JSON.parse(response.body)
   end
+
+  def self.fetch_fundraisers_by_id(id)
+    uri = URI('https://mosqueapp-test.onrender.com/graphql')
+
+    query = {
+      query: <<~GRAPHQL
+        {
+          fundraiserById(id: #{id}) {
+            id
+            name
+            goalAmount
+            masjidId
+          }
+        }
+      GRAPHQL
+    }
+
+    response = Net::HTTP.post(uri, query.to_json, "Content-Type" => "application/json")
+    JSON.parse(response.body)
+  end
+
+  def self.create_donation(fundraiser_id, amount, contact_email, contact_first_name, contact_last_name, contact_phone_number)
+    uri = URI('https://mosqueapp-test.onrender.com/graphql')
+    query = {
+      query: <<~GRAPHQL
+        mutation {
+          createDonation(input: {
+            fundraiserId: #{fundraiser_id},
+            amount: #{amount},
+            contactEmail: "#{contact_email}",
+            contactFirstName: "#{contact_first_name}",
+            contactLastName: "#{contact_last_name}",
+            contactPhoneNumber: "#{contact_phone_number}"
+          }) {
+            donation {
+              fundraiserId
+              amount
+              contact {
+                id
+                email
+                firstName
+                lastName
+                phoneNumber
+              }
+            }
+          }
+        }
+      GRAPHQL
+    }
+    response = Net::HTTP.post(uri, query.to_json, "Content-Type" => "application/json")
+    JSON.parse(response.body)
+  end
+
+
 end

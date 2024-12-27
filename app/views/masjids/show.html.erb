@@ -4,6 +4,8 @@
   <div>
     <h2><%= fundraiser['name'] %></h2>
     <p>Goal Amount: <%= fundraiser['goalAmount'] %></p>
+    <h2><%= fundraiser['id'] %></h2>
+    <%= link_to fundraiser['name'], masjid_fundraiser_path(fundraiser['id']) %>
   </div>
 <% end %>
 
