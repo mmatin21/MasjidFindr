@@ -1,0 +1,10 @@
+<h1>Fundraisers for <%= @fundraisers_data['data']['fundraisers'][0]['name'] %></h1>
+
+<% @fundraisers.each do |fundraiser| %>
+  <div>
+    <h2><%= fundraiser['name'] %></h2>
+    <p>Goal Amount: <%= fundraiser['goalAmount'] %></p>
+  </div>
+<% end %>
+
+<%= link_to 'Back to Masjids List', masjids_path %>

@@ -1,13 +1,12 @@
-<!-- app/views/masjids/index.html.erb -->
-<h1>Masjids</h1>
-<ul>
-  <% @masjids.each do |masjid| %>
-    <li>
-      <strong><%= masjid['name'] %></strong>
-      <p><%= masjid['address'] %></p>
-      <p><%= masjid['city'] %></p>
-      <p><%= masjid['state'] %></p>
-      <p><%= masjid['zipcode'] %></p>
-    </li>
-  <% end %>
-</ul>
+<h1>Masjids List</h1>
+
+<% @masjids.each do |masjid| %>
+  <div>
+    <h2>
+      <%= link_to masjid['name'], masjid_path(masjid['id']) %>
+    </h2>
+    <p><%= masjid['address'] %></p>
+    <p><%= masjid['city'] %></p>
+    <p><%= masjid['state'] %></p>
+  </div>
+<% end %>

@@ -10,12 +10,10 @@ uri = URI('https://mosqueapp-test.onrender.com/graphql')
 query = {
   query: <<~GRAPHQL
     {
-      masjids {
+      fundraisers(masjidId: 1) {
+        id
         name
-        address
-        city
-        state
-        zipcode
+        goalAmount
       }
     }
   GRAPHQL

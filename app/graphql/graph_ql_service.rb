@@ -13,6 +13,7 @@ class GraphQlService
       query: <<~GRAPHQL
         {
           masjids {
+            id
             name
             address
             city
@@ -27,6 +28,25 @@ class GraphQlService
     response = Net::HTTP.post(uri, query.to_json, "Content-Type" => "application/json")
 
     # Parse and return the JSON response
+    JSON.parse(response.body)
+  end
+
+  def self.fetch_fundraisers_for_masjid(masjid_id)
+    uri = URI('https://mosqueapp-test.onrender.com/graphql')
+
+    query = {
+      query: <<~GRAPHQL
+        {
+          fundraisers(masjidId: #{masjid_id}) {
+            id
+            name
+            goalAmount
+          }
+        }
+      GRAPHQL
+    }
+
+    response = Net::HTTP.post(uri, query.to_json, "Content-Type" => "application/json")
     JSON.parse(response.body)
   end
 end
