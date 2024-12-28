@@ -9,7 +9,7 @@ class DonationsController < ApplicationController
   def create
     amount = params[:amount].to_i * 100
 
-    masjid_data = GraphQlService.fetch_masjid_by_id(20)
+    masjid_data = GraphQlService.fetch_masjid_by_id(params[:masjid_id])
     masjid = masjid_data['data']['masjidById'][0]['stripeAccountId']
 
 
