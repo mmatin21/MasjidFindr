@@ -13,9 +13,10 @@ class DonationsController < ApplicationController
       params[:contact_last_name],
       params[:contact_phone_number]
     )
+    Rails.logger.debug "Fundraiser: #{params}" 
 
     if donation['data']['createDonation']
-      redirect_to masjid_fundraiser_path(params[:fundraiser_id]), notice: 'Donation created successfully!'
+      redirect_to masjid_fundraiser_path(params[:masjid_id], params[:fundraiser_id]), notice: 'Donation created successfully!'
     else
       redirect_to new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]), alert: 'Failed to create donation.'
     end
