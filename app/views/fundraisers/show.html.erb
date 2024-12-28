@@ -1,5 +1,6 @@
 <h1>Fundraiser: <%= @fundraiser['name'] %></h1>
 <p>Goal Amount: $<%= @fundraiser['goalAmount'] %></p>
+ <p data-controller="hello"></p>
 
 <%= link_to 'Donate Now', new_masjid_fundraiser_donation_path(@fundraiser['masjidId'], @fundraiser['id'] ), class: 'btn btn-primary' %>
 <%= link_to 'Back to Masjids', masjids_path, class: 'btn btn-secondary' %>

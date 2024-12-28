@@ -4,7 +4,7 @@ class FundraisersController < ApplicationController
     @fundraiser_data = GraphQlService.fetch_fundraisers_by_id(params[:id])
     @fundraiser = @fundraiser_data['data']['fundraiserById'][0]
 
-    Rails.logger.debug "Fundraiser: #{@fundraiser}" 
+    Rails.logger.debug "Fundraiser: #{params}" 
 
   end
 end

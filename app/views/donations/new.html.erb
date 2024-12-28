@@ -1,6 +1,4 @@
-<h1>Create a Donation</h1>
-
-<%= form_with url: masjid_fundraiser_donations_path(@fundraiser_id), method: :post do |form| %>
+<%= form_with url: masjid_fundraiser_donations_path(@fundraiser_id), method: :post, data: { controller: "stripe", action: "submit->stripe#handleSubmit",stripe_target: "form", turbo: "false" } do |form| %>
   <div class="form-group">
     <%= form.label :amount, "Donation Amount" %>
     <%= form.number_field :amount, class: "form-control", required: true %>
@@ -25,6 +23,11 @@
     <%= form.label :contact_phone_number, "Phone Number" %>
     <%= form.telephone_field :contact_phone_number, class: "form-control", required: true %>
   </div>
+
+  <!-- Stripe Card Element -->
+  <div id="card-element" data-stripe-target="cardElement"></div>
+
+  <%= form.hidden_field :payment_method, id: "payment_method" %>
 
   <%= form.submit "Donate", class: "btn btn-success" %>
 <% end %>

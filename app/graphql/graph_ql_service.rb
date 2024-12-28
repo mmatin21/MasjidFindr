@@ -6,7 +6,7 @@ require 'json'
 class GraphQlService
   def self.fetch_masjids
     # Set the URI for the GraphQL endpoint
-    uri = URI('https://mosqueapp-test.onrender.com/graphql')
+    uri = URI('http://localhost:3000/graphql')
 
     # Define the GraphQL query
     query = {
@@ -32,7 +32,7 @@ class GraphQlService
   end
 
   def self.fetch_fundraisers_for_masjid(masjid_id)
-    uri = URI('https://mosqueapp-test.onrender.com/graphql')
+    uri = URI('http://localhost:3000/graphql')
 
     query = {
       query: <<~GRAPHQL
@@ -50,8 +50,25 @@ class GraphQlService
     JSON.parse(response.body)
   end
 
+  def self.fetch_masjid_by_id(masjid_id)
+    uri = URI('http://localhost:3000/graphql')
+
+    query = {
+      query: <<~GRAPHQL
+        {
+          masjidById(id: #{masjid_id}) {
+            stripeAccountId
+          }
+        }
+      GRAPHQL
+    }
+
+    response = Net::HTTP.post(uri, query.to_json, "Content-Type" => "application/json")
+    JSON.parse(response.body)
+  end
+
   def self.fetch_fundraisers_by_id(id)
-    uri = URI('https://mosqueapp-test.onrender.com/graphql')
+    uri = URI('http://localhost:3000/graphql')
 
     query = {
       query: <<~GRAPHQL
@@ -71,7 +88,7 @@ class GraphQlService
   end
 
   def self.create_donation(fundraiser_id, amount, contact_email, contact_first_name, contact_last_name, contact_phone_number)
-    uri = URI('https://mosqueapp-test.onrender.com/graphql')
+    uri = URI('http://localhost:3000/graphql')
     query = {
       query: <<~GRAPHQL
         mutation {

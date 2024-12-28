@@ -47,6 +47,8 @@ gem "bootsnap", require: false
 
 gem 'graphql-client'
 
+gem 'stripe'
+
 # Use Sass to process CSS
 # gem "sassc-rails"
 
