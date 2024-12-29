@@ -6,7 +6,7 @@ require 'json'
 class GraphQlService
   def self.fetch_masjids
     # Set the URI for the GraphQL endpoint
-    uri = URI('http://localhost:3000/graphql')
+    uri = URI('http://localhost:3001/graphql')
 
     # Define the GraphQL query
     query = {
@@ -32,7 +32,7 @@ class GraphQlService
   end
 
   def self.fetch_fundraisers_for_masjid(masjid_id)
-    uri = URI('http://localhost:3000/graphql')
+    uri = URI('http://localhost:3001/graphql')
 
     query = {
       query: <<~GRAPHQL
@@ -51,7 +51,7 @@ class GraphQlService
   end
 
   def self.fetch_masjid_by_id(masjid_id)
-    uri = URI('http://localhost:3000/graphql')
+    uri = URI('http://localhost:3001/graphql')
 
     query = {
       query: <<~GRAPHQL
@@ -68,7 +68,7 @@ class GraphQlService
   end
 
   def self.fetch_fundraisers_by_id(id)
-    uri = URI('http://localhost:3000/graphql')
+    uri = URI('http://localhost:3001/graphql')
 
     query = {
       query: <<~GRAPHQL
@@ -88,7 +88,7 @@ class GraphQlService
   end
 
   def self.create_donation(fundraiser_id, amount, contact_email, contact_first_name, contact_last_name, contact_phone_number)
-    uri = URI('http://localhost:3000/graphql')
+    uri = URI('http://localhost:3001/graphql')
     query = {
       query: <<~GRAPHQL
         mutation {
