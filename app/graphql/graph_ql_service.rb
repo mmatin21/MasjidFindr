@@ -41,6 +41,8 @@ class GraphQlService
             id
             name
             goalAmount
+            description
+            createdAt
           }
         }
       GRAPHQL
