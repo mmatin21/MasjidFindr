@@ -10,8 +10,6 @@ class MasjidsController < ApplicationController
     masjid_id = params[:id]
     @fundraisers_data = GraphQlService.fetch_fundraisers_for_masjid(masjid_id)
     @fundraisers = @fundraisers_data['data']['fundraisers']
-    Rails.logger.debug "Masjid: #{params}" 
+    Rails.logger.debug "Masjid: #{params}"
   end
-
-
 end
