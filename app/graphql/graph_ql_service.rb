@@ -79,6 +79,8 @@ class GraphQlService
             id
             name
             goalAmount
+            description
+            endDate
             masjidId
           }
         }
