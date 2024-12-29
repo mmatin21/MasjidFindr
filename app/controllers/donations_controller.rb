@@ -12,7 +12,6 @@ class DonationsController < ApplicationController
     masjid_data = GraphQlService.fetch_masjid_by_id(params[:masjid_id])
     masjid = masjid_data['data']['masjidById'][0]['stripeAccountId']
 
-
     begin
       payment_intent = Stripe::PaymentIntent.create(
         amount: amount,
@@ -28,7 +27,6 @@ class DonationsController < ApplicationController
       Rails.logger.debug "payment intent status: #{payment_intent.status}" 
 
       if payment_intent.status == 'succeeded'
-      
         donation = GraphQlService.create_donation(
           params[:fundraiser_id],
           params[:amount],
@@ -37,7 +35,7 @@ class DonationsController < ApplicationController
           params[:contact_last_name],
           params[:contact_phone_number]
         )
-        Rails.logger.debug "Fundraiser: #{params}" 
+        Rails.logger.debug "Fundraiser: #{params}"
 
         if donation['data']['createDonation']
           redirect_to masjid_fundraiser_path(params[:masjid_id], params[:fundraiser_id]), notice: 'Donation created successfully!'

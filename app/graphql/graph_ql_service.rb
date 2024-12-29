@@ -24,8 +24,16 @@ class GraphQlService
       GRAPHQL
     }
 
+    api_key = Rails.application.credentials.dig(:masjidmanager, :api_key)
+
+    # Define the headers including the API key for authorization
+    headers = {
+      "Content-Type" => "application/json",
+      "X-Api-Key" => "#{api_key}"
+    }
+
     # Make the POST request to the GraphQL endpoint
-    response = Net::HTTP.post(uri, query.to_json, "Content-Type" => "application/json")
+    response = Net::HTTP.post(uri, query.to_json, headers)
 
     # Parse and return the JSON response
     JSON.parse(response.body)
