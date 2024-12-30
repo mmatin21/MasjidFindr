@@ -6,6 +6,7 @@ class FundraisersController < ApplicationController
       @fundraiser_id = params[:id]
       @fundraiser_data = GraphQlService.fetch_fundraisers_by_id(params[:id])
       Rails.logger.debug "Masjid: #{params}"
+      Rails.logger.debug "fundraiser data: #{@fundraiser_data}"
 
       # Check if the API returned an unauthorized error
       if @fundraiser_data['errors']
@@ -14,7 +15,7 @@ class FundraisersController < ApplicationController
         flash[:alert] = "Error fetching fundraisers: #{api_errors}"
         @fundraiser = [] # Return an empty array so the view can handle it gracefully
       else
-        @fundraiser = @fundraiser_data['data']['fundraisers']
+        @fundraiser = @fundraiser_data['data']['fundraiserById'][0]
       end
     rescue StandardError => e
       Rails.logger.error("Unexpected Error: #{e.message}")
