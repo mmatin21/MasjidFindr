@@ -11,11 +11,11 @@ export default class extends Controller {
     this.card = this.elements.create("card", {
       style: {
         base: {
-          color: "#1f2937", // dark:text-white equivalent
-          backgroundColor: "#f9fafb", // bg-gray-50 equivalent
-          border: "1px solid #d1d5db", // border-gray-300 equivalent
+          color: "#9ca3af", // dark:text-white equivalent
+         
+       // border-gray-300 equivalent
           borderRadius: "0.375rem", // rounded-lg equivalent
-          padding: "0.625rem", // p-2.5 equivalent
+          padding: "0.650rem", // p-2.5 equivalent
           fontSize: "0.875rem", // text-sm equivalent
           fontSmooth: "always",
           fontFamily: "'Inter', sans-serif", // Matches Tailwind's default font

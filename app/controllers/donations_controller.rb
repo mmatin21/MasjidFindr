@@ -1,9 +1,10 @@
 class DonationsController < ApplicationController
   Stripe.api_key = Rails.application.credentials.stripe[:secret_key] # If you're using credentials
 
-
   def new
     @fundraiser_id = params[:fundraiser_id]
+    Rails.logger.debug "Fundraiser: #{params}"
+
   end
 
   def create
@@ -24,7 +25,7 @@ class DonationsController < ApplicationController
         },
         return_url: "http://localhost:3000/masjids"
       )
-      Rails.logger.debug "payment intent status: #{payment_intent.status}" 
+      Rails.logger.debug "payment intent status: #{payment_intent.status}"
 
       if payment_intent.status == 'succeeded'
         donation = GraphQlService.create_donation(
