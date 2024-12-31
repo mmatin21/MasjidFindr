@@ -69,6 +69,63 @@ class GraphQlService
     JSON.parse(response.body)
   end
 
+  def self.fetch_prayers_for_masjid(masjid_id)
+    masjid_id = masjid_id.to_i
+    uri = URI('http://localhost:3001/graphql')
+
+    query = {
+      query: <<~GRAPHQL
+        {
+          prayers(masjidId: #{masjid_id}) {
+            name
+            adhaan
+            iqaamah
+          }
+        }
+      GRAPHQL
+    }
+    api_key = Rails.application.credentials.dig(:masjidmanager, :api_key)
+
+    # Define the headers including the API key for authorization
+    headers = {
+      "Content-Type" => "application/json",
+      "X-Api-Key" => "#{api_key}"
+    }
+
+    # Make the POST request to the GraphQL endpoint
+    response = Net::HTTP.post(uri, query.to_json, headers)
+    JSON.parse(response.body)
+  end
+
+  def self.fetch_events_for_masjid(masjid_id)
+    masjid_id = masjid_id.to_i
+    uri = URI('http://localhost:3001/graphql')
+
+    query = {
+      query: <<~GRAPHQL
+        {
+          events(masjidId: #{masjid_id}) {
+            name
+            description
+            eventDate
+            address
+          }
+        }
+      GRAPHQL
+    }
+    api_key = Rails.application.credentials.dig(:masjidmanager, :api_key)
+
+    # Define the headers including the API key for authorization
+    headers = {
+      "Content-Type" => "application/json",
+      "X-Api-Key" => "#{api_key}"
+    }
+
+    # Make the POST request to the GraphQL endpoint
+    response = Net::HTTP.post(uri, query.to_json, headers)
+    JSON.parse(response.body)
+  end
+
   def self.fetch_masjid_by_id(masjid_id)
     uri = URI('http://localhost:3001/graphql')
     masjid_id = masjid_id.to_i
@@ -78,6 +135,9 @@ class GraphQlService
         {
           masjidById(id: #{masjid_id}) {
             stripeAccountId
+            name
+            address
+
           }
         }
       GRAPHQL

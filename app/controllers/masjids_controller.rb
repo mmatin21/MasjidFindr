@@ -23,13 +23,25 @@ class MasjidsController < ApplicationController
 
   def show
     begin
-      
       # Fetch the fundraisers for the selected masjid
+      @masjid_id = params[:id]
+      @fundraisers_data = GraphQlService.fetch_fundraisers_for_masjid(@masjid_id)
+      @events_data = GraphQlService.fetch_events_for_masjid(@masjid_id)
+      @prayers_data = GraphQlService.fetch_prayers_for_masjid(@masjid_id)
+      @masjid_data = GraphQlService.fetch_masjid_by_id(@masjid_id)
 
-      masjid_id = params[:id]
-      @fundraisers_data = GraphQlService.fetch_fundraisers_for_masjid(masjid_id)
       @fundraisers = @fundraisers_data['data']['fundraisers']
-      Rails.logger.debug "Masjid: #{params}"
+      @events = @events_data['data']['events']
+      @prayers = @prayers_data['data']['prayers']
+
+      @masjid_name = @masjid_data['data']['masjidById'][0]['name']
+      @active_section = 'prayers'
+      Rails.logger.debug "Params: #{params}"
+
+      Rails.logger.debug "API Data: #{@events_data}"
+      Rails.logger.debug "API Data: #{@prayers_data}"
+
+
 
       # Check if the API returned an unauthorized error
       if @fundraisers_data['errors']
