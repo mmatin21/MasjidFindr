@@ -17,13 +17,12 @@
         </li>
       </ul>
     </div>
+    <% if params[:fundraisers].present? %>
+      <%= render 'fundraisers', fundraisers: @fundraisers %>
+    <% elsif params[:events].present? %>
+      <%= render 'events', events: @events %>
+    <% else %>
+      <%= render 'prayers', prayers: @prayers %>
+    <% end %>
   </div>
-
-  <% if params[:fundraisers].present? %>
-    <%= render 'fundraisers', fundraisers: @fundraisers %>
-  <% elsif params[:events].present? %>
-    <%= render 'events', events: @events %>
-  <% else %>
-  <%= render 'prayers', prayers: @prayers %>
-  <% end %>
 </section>

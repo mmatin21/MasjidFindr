@@ -80,6 +80,8 @@ class GraphQlService
             name
             adhaan
             iqaamah
+            formattedAdhaan
+            formattedIqaamah
           }
         }
       GRAPHQL
@@ -107,7 +109,7 @@ class GraphQlService
           events(masjidId: #{masjid_id}) {
             name
             description
-            eventDate
+            formattedEventDate
             address
           }
         }
