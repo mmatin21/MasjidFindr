@@ -1,10 +1,10 @@
 <div class="grid grid-cols-1 mt-12 gap-y-12 gap-x-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       <% unless events.nil? %>
         <% events.each do |event| %>
-          <div>
+          <div class="bg-white rounded-lg border border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-700">
               <img class="object-cover object-top w-full h-64 lg:h-48 rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/content-gallery-3.png"
                   alt="">
-                <div class="mt-4 space-y-2">
+                <div class="mt-4 px-8 pb-8">
                   <div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white">
                       <%= event['name'] %>
