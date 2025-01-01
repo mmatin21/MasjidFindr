@@ -9,4 +9,5 @@ Rails.application.routes.draw do
       resources :donations, only: [:new, :create]
     end
   end
+  root "masjids#index"
 end
