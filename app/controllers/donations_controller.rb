@@ -24,6 +24,7 @@ class DonationsController < ApplicationController
 
     # Step 4: Process payment
     payment_result = process_stripe_payment(amount, masjid)
+    Rails.logger.debug "Payment result: #{payment_result}"
     return payment_result if payment_result.is_a?(ActionController::Base)
     payment_intent = payment_result
 
@@ -119,13 +120,17 @@ class DonationsController < ApplicationController
   end
 
   def handle_stripe_error(error)
-    redirect_to new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]), 
-                alert: "Payment error: #{error.message}"
+    render turbo_stream: turbo_stream.replace('turbo-modal',
+      partial: 'shared/error_modal',
+      locals: { message: error.message }
+    )
   end
 
   def handle_general_error(error)
     Rails.logger.error("Donation creation error: #{error.message}")
-    redirect_to new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]), 
-                alert: 'An unexpected error occurred'
+    render turbo_stream: turbo_stream.replace('turbo',
+      partial: 'shared/error_modal',
+      locals: { message: 'An unexpected error occurred' }
+    )
   end
 end
