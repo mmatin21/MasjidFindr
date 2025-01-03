@@ -1,7 +1,10 @@
 <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
   <div class="mx-auto max-w-screen-xl content-center px-4 2xl:px-0" data-controller="donation" >
     <div class="mx-auto max-w-5xl">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Payment</h2>
+      <div class="flex justify-between">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Payment</h2>
+        <%= link_to "Back to Masjid", masjid_path(params[:masjid_id]), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>
+      </div>
       <div class="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12">
         <%= form_with url: masjid_fundraiser_donations_path(params[:masjid_id], @fundraiser_id), method: :post, data: { controller: "stripe", action: "submit->stripe#handleSubmit",stripe_target: "form", turbo: "false" } do |form| %>
           <div class="mb-6 grid grid-cols-2 gap-4">
@@ -12,7 +15,7 @@
             <div class="col-span-2 sm:col-span-1">
               <%= form.label :contact_last_name, "Last Name", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
               <%= form.text_field :contact_last_name, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "Last name" %>
-           </div>
+            </div>
             <div class="col-span-2 sm:col-span-1">
               <%= form.label :contact_email, "Email", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
               <%= form.text_field :contact_email, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "Email" %>
@@ -20,7 +23,7 @@
             <div class="col-span-2 sm:col-span-1">
               <%= form.label :amount, "Donation Amount", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
               <%= form.number_field :amount, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "$50", step: 0.01, min: 0,  data: { donation_target: "amount", action: "input->donation#updateTotal" } %>
-           </div>
+            </div>
           </div>
           <div class="mb-6">
             <label for="card-element" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Card Details*</label>
@@ -28,32 +31,31 @@
             <div id="card-errors" class="text-red-500 text-sm mt-2" role="alert"></div>
           </div>
           <%= form.hidden_field :payment_method, id: "payment_method" %>
-         
-        <div class="mt-6 grow sm:mt-8 lg:mt-0">
-          <div  class="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
-            <div class="space-y-2">
-               <dl class="flex items-center justify-between gap-4">
-                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Platform and Service fee</dt>
-                <dd data-donation-target="fees" class="text-base font-medium text-gray-900 dark:text-white"></dd>
-              </dl>
-              <dl class="flex items-center justify-between gap-4">
-                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Masjid Receives</dt>
-                <dd class="text-base font-medium text-green-500" data-donation-target="minus"></dd>
-              </dl>
-              <div class="flex items-center">
-             <input id="fee-checkbox" type="checkbox" data-donation-target="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" data-action="change->donation#toggleFee">
-             <label for="fee-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I want to cover <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">platform and service fees</a>.</label>
+          <div class="mt-6 grow sm:mt-8 lg:mt-0">
+            <div  class="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
+              <div class="space-y-2">
+                <dl class="flex items-center justify-between gap-4">
+                  <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Platform and Service fee</dt>
+                  <dd data-donation-target="fees" class="text-base font-medium text-gray-900 dark:text-white"></dd>
+                </dl>
+                <dl class="flex items-center justify-between gap-4">
+                  <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Masjid Receives</dt>
+                  <dd class="text-base font-medium text-green-500" data-donation-target="minus"></dd>
+                </dl>
+                <div class="flex items-center">
+                  <input id="fee-checkbox" type="checkbox" data-donation-target="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" data-action="change->donation#toggleFee">
+                  <label for="fee-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I want to cover <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">platform and service fees</a>.</label>
+                </div>
+                <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+                  <dt class="text-base font-bold text-gray-900 dark:text-white">Donation Total</dt>
+                  <dd id="donation-total" class="text-base font-bold text-gray-900 dark:text-white" data-donation-target="total">$0.00</dd>
+                </dl>
+              </div>
             </div>
-            <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
-              <dt class="text-base font-bold text-gray-900 dark:text-white">Donation Total</dt>
-              <dd id="donation-total" class="text-base font-bold text-gray-900 dark:text-white" data-donation-target="total">$0.00</dd>
-            </dl>
+            <div class="mt-6 flex items-center justify-center gap-8">
+            </div>
           </div>
-        </div>
-        <div class="mt-6 flex items-center justify-center gap-8">
-        </div>
-        </div>
-         <button type="submit" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Pay now</button>
+          <button type="submit" class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Pay now</button>
         <% end %>
       </div>
       <p class="mt-6 text-center text-gray-500 dark:text-gray-400 sm:mt-8 lg:text-left">
