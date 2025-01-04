@@ -1,0 +1,7 @@
+<h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl mb-2">There was an error processing your donation.</h2>
+<p class="text-gray-500 dark:text-gray-400 mb-6 md:mb-8"><%= params[:error] %></p>
+
+<div class="flex items-center space-x-4">
+  <%= link_to 'Back to Donation', new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]), class: 'text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800' %>
+  <%= link_to 'Back to Masjid', masjid_path(params[:masjid_id]), class: 'text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800' %>
+</div>
