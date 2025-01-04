@@ -11,7 +11,7 @@ export default class extends Controller {
   updateTotal() {
     const amount = parseFloat(this.amountTarget.value) || 0; // Default to 0 if empty
 
-    const platformFeePercentage = 0.04; // Example: 4%
+    const platformFeePercentage = 0.039; // Example: 4%
     const platformFee = amount > 0 ? (amount * platformFeePercentage) + .30 : 0;
 
     // Masjid receives amount
@@ -33,7 +33,7 @@ export default class extends Controller {
     const feeCheckbox = this.checkboxTarget.checked;
     const amount = parseFloat(this.amountTarget.value)
     const fixedFee = .30
-    const percentFee = .04
+    const percentFee = .039
     
     if(feeCheckbox){
       this.amountTarget.value = this.amountTarget.value > 0 ? ((amount + fixedFee)/(1-percentFee)).toFixed(2) : 0

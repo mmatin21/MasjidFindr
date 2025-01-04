@@ -11,7 +11,12 @@ class DonationsController < ApplicationController
     # Use session or params to pass relevant data
     @success = params[:success] == "true"
     @error_message = params[:error_message]
+    Rails.logger.debug "Donation: #{params[:donation]}"
     @donation = params[:donation] # If needed, retrieve donation details
+    if @donation.present?
+      @amount = @donation['amount']
+      @contact = @donation['contact']
+    end
   end
 
   def create
@@ -80,14 +85,17 @@ class DonationsController < ApplicationController
   end
 
   def process_stripe_payment(amount, masjid)
+    # Calculate platform fee (1%) - amount is in cents
+    platform_fee = (amount * 0.01).round
     Stripe::PaymentIntent.create(
       amount: amount,
       currency: 'usd',
       payment_method: params[:payment_method],
       confirmation_method: 'manual',
       confirm: true,
+      application_fee_amount: platform_fee,
       transfer_data: {
-        destination: masjid
+        destination: masjid,
       },
       return_url: masjid_fundraiser_url(params[:masjid_id], params[:fundraiser_id])
     )
@@ -98,7 +106,7 @@ class DonationsController < ApplicationController
       donation = create_donation_record(payment_intent.amount)
 
       if donation['data']['createDonation']
-        redirect_to payment_confirmation_masjid_fundraiser_donations_path(success: true, donation: donation),
+        redirect_to payment_confirmation_masjid_fundraiser_donations_path(success: true, donation: donation['data']['createDonation']['donation']),
                     notice: 'Donation created successfully!'
       else
         refund_payment(payment_intent.id)
@@ -112,9 +120,13 @@ class DonationsController < ApplicationController
   end
 
   def create_donation_record(amount_in_cents)
+    amount = amount_in_cents / 100.0
+    fixed_fee = 0.30
+    percent_fee = 0.039
+    amount_after_fee = amount - (amount * percent_fee) - fixed_fee
     GraphQlService.create_donation(
       params[:fundraiser_id],
-      amount_in_cents / 100.0,
+      amount_after_fee,
       params[:contact_email]&.strip,
       params[:contact_first_name]&.strip,
       params[:contact_last_name]&.strip,
