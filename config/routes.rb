@@ -13,5 +13,6 @@ Rails.application.routes.draw do
       end
     end
   end
+  post '/webhooks/stripe', to: 'webhooks#stripe'
   root "masjids#index"
 end
