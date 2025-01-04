@@ -14,7 +14,8 @@ class DonationsController < ApplicationController
     Rails.logger.debug "Donation: #{params[:donation]}"
     @donation = params[:donation] # If needed, retrieve donation details
     if @donation.present?
-      @amount = @donation['amount']
+      @amount = @donation['amount'].to_f
+      @amount = (@amount + 0.30) / (1 - 0.039)
       @contact = @donation['contact']
     end
   end
