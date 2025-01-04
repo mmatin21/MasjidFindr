@@ -7,6 +7,13 @@ class DonationsController < ApplicationController
 
   end
 
+  def payment_confirmation
+    # Use session or params to pass relevant data
+    @success = params[:success] == "true"
+    @error_message = params[:error_message]
+    @donation = params[:donation] # If needed, retrieve donation details
+  end
+
   def create
     # Step 1: Parameter validation
     validation_result = validate_donation_params
@@ -51,7 +58,7 @@ class DonationsController < ApplicationController
   def process_amount
     amount = (params[:amount].to_f * 100).to_i
     if amount <= 0
-      return redirect_to new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]), 
+      return redirect_to new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]),
                         alert: 'Invalid donation amount'
     end
     amount
@@ -91,7 +98,7 @@ class DonationsController < ApplicationController
       donation = create_donation_record(payment_intent.amount)
 
       if donation['data']['createDonation']
-        redirect_to masjid_fundraiser_path(params[:masjid_id], params[:fundraiser_id]), 
+        redirect_to payment_confirmation_masjid_fundraiser_donations_path(success: true, donation: donation),
                     notice: 'Donation created successfully!'
       else
         refund_payment(payment_intent.id)
@@ -120,17 +127,10 @@ class DonationsController < ApplicationController
   end
 
   def handle_stripe_error(error)
-    render turbo_stream: turbo_stream.replace('turbo-modal',
-      partial: 'shared/error_modal',
-      locals: { message: error.message }
-    )
+    redirect_to payment_confirmation_masjid_fundraiser_donations_path(error: error.message)
   end
 
   def handle_general_error(error)
-    Rails.logger.error("Donation creation error: #{error.message}")
-    render turbo_stream: turbo_stream.replace('turbo',
-      partial: 'shared/error_modal',
-      locals: { message: 'An unexpected error occurred' }
-    )
+    redirect_to payment_confirmation_masjid_fundraiser_donations_path(error: error.message)
   end
 end

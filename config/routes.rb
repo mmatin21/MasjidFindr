@@ -6,7 +6,11 @@ Rails.application.routes.draw do
 
   resources :masjids, only: [:index, :show] do
     resources :fundraisers, only: [:show] do
-      resources :donations, only: [:new, :create]
+      resources :donations, only: [:new, :create] do
+        collection do
+          get :payment_confirmation
+        end
+      end
     end
   end
   root "masjids#index"
