@@ -27,6 +27,10 @@ class DonationsController < ApplicationController
     @contact_email = params[:contact_email]
     @contact_name = params[:contact_first_name] + " " + params[:contact_last_name]
     @amount_in_cents = (@amount * 100).to_i
+    @installments = params[:installments].present? ? params[:installments].to_i : nil
+    if @installments.present?
+      @installment_amount = @amount / @installments
+    end
     Rails.logger.debug "Amount in cents: #{@amount_in_cents}"
 
     respond_to do |format|
@@ -43,14 +47,17 @@ class DonationsController < ApplicationController
     # Step 1: Parameter validation
     validation_result = validate_donation_params
     return validation_result if validation_result
+
     # Step 2: Amount processing and validation
     amount_result = process_amount
     return amount_result if amount_result.is_a?(ActionController::Base)
+
     amount = amount_result
 
     # Step 3: Masjid validation and retrieval
     masjid_result = fetch_and_validate_masjid
     return masjid_result if masjid_result.is_a?(ActionController::Base)
+
     masjid = masjid_result
 
     # Step 4: Process payment
@@ -61,9 +68,11 @@ class DonationsController < ApplicationController
       # Create a subscription instead of multiple payment intents
       subscription_result = create_stripe_subscription(masjid, customer, amount, installment_duration)
       return subscription_result if subscription_result.is_a?(ActionController::Base)
+
       subscription = subscription_result
     else
       payment_result = process_stripe_payment(amount, masjid)
+
       return payment_result if payment_result.is_a?(ActionController::Base)
       payment_intent = payment_result
       # Step 5: Create donation record
