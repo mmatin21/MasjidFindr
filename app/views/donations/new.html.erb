@@ -30,9 +30,9 @@
         <li role="payment">
           <button type="button" class="hover:text-primary-700dark:border-gray-600 w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700" id="crypto-tab" data-tabs-target="#crypto-method" role="tab" aria-controls="crypto-method" aria-selected="false">ACH</button>
         </li>
-        <li role="payment">
+        <%# <li role="payment">
           <button type="button" class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700  dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700" id="paypal-tab" data-tabs-target="#paypal-method" role="tab" aria-controls="paypal-method" aria-selected="false">Other wallets</button>
-        </li>
+        </li> %>
       </ul>
       <div id="payment-tab-content">
         <!-- Method 1 -->
@@ -146,9 +146,9 @@
         <div class="hidden" id="crypto-method" role="tabpanel" aria-labelledby="crypto-tab">
           </div>
         <!-- Method 4 -->
-        <div class="hidden" id="paypal-method" role="tabpanel" aria-labelledby="paypal-tab">
+        <%# <div class="hidden" id="paypal-method" role="tabpanel" aria-labelledby="paypal-tab">
 
-        </div>
+        </div> %>
       </div>
       <%= form.hidden_field :payment_method, id: "payment_method" %>
         <div class="mt-6 grow sm:mt-8 lg:mt-0">

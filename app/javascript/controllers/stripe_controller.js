@@ -13,9 +13,6 @@ export default class extends Controller {
       style: {
         base: {
           color: "#9ca3af", // dark:text-white equivalent
-         
-       // border-gray-300 equivalent
-          fontSize: "px-2", // text-sm equivalent
           fontFamily: "'Inter', sans-serif", // Matches Tailwind's default font
           "::placeholder": {
             color: "#9ca3af", // dark:placeholder:text-gray-400 equivalent
@@ -25,7 +22,7 @@ export default class extends Controller {
           color: "#ef4444", // Red for invalid text
         }
       },
-    });  
+    });
     this.card.mount(this.cardElementTarget);
 
     this.card.on("change", (event) => {
@@ -41,7 +38,7 @@ export default class extends Controller {
 
 
     // Adding Turbo Stream support
-    
+
   }
 
   // Handle form submission
