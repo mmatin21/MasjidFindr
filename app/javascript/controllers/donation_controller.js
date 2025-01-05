@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
 // Connects to data-controller="donation"
 export default class extends Controller {
-  static targets = ["amount", "total", "checkbox", "minus", "fees"];
+  static targets = ["amount", "total", "checkbox", "minus", "fees", "installments"];
 
   connect() {
     this.updateTotal(); // Initialize the total on page load
@@ -40,5 +40,12 @@ export default class extends Controller {
       this.amountTarget.value = this.amountTarget.value > 0 ? ((amount + fixedFee)/(1-percentFee)).toFixed(2) : 0
     }
     this.updateTotal()
+  }
+
+  clearInstallments() {
+    console.log("clearInstallments")
+    this.installmentsTarget.value = null
+    console.log(this.installmentsTarget.value)
+
   }
 }

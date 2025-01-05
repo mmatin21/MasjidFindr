@@ -107,7 +107,6 @@ class DonationsController < ApplicationController
       },
       return_url: masjid_fundraiser_url(params[:masjid_id], params[:fundraiser_id])
     )
-    render json: { clientSecret: payment.client_secret }
   end
 
   def create_stripe_subscription(masjid, customer, amount, installment_months)
