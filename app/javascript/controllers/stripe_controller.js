@@ -2,11 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="stripe"
 export default class extends Controller {
-  static targets = ["form", "cardElement", "errorContainer"]
+  static targets = ["form", "cardElement", "achElement", "errorContainer"]
 
+  isCardMode = true
   connect() {
     console.log("hello world")
-    this.stripe = Stripe('pk_test_51QaoW2Im5wQ2SWSpElNOoW2u560OiFwF1Jxu8NADL2EJbG51c0XCvagpIyj2oREadliTlqMdWyzw1e2pHC96XKtf00M5Js5i5H'); // Your publishable key
+    this.stripe = Stripe(stripePublishableKey); // Your publishable key
     this.elements = this.stripe.elements();
     this.card = this.elements.create("card", {
       style: {
