@@ -44,9 +44,9 @@
           <label for="card-element" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Card Details*</label>
           <div id="card-element" data-stripe-target="cardElement" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"></div>
           <div id="card-errors" class="text-red-500 text-sm mt-2" role="alert"></div>
-          <div id="express-checkout-button" data-stripe-target="expressCheckoutButton" class="mb-41">
+          <%# <div id="express-checkout-button" data-stripe-target="expressCheckoutButton" class="mb-41"> %>
             <!-- A Stripe Payment Request Button will be inserted here -->
-          </div>
+          <%# </div> %>
         </div>
         <%= form.hidden_field :payment_method, id: "payment_method" %>
         <%= form.hidden_field :amount, value: @amount, data: { donation_target: "amount", action: "input->donation#updateTotal" } %>

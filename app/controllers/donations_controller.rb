@@ -72,9 +72,10 @@ class DonationsController < ApplicationController
       subscription = subscription_result
     else
       payment_result = process_stripe_payment(amount, masjid)
-
       return payment_result if payment_result.is_a?(ActionController::Base)
+
       payment_intent = payment_result
+      
       # Step 5: Create donation record
       handle_donation_creation(payment_intent)
     end
@@ -89,11 +90,12 @@ class DonationsController < ApplicationController
 
   def validate_donation_params
     required_params = [:amount, :masjid_id, :fundraiser_id, :payment_method]
+
     missing_params = required_params.select { |param| params[param].blank? }
 
     if missing_params.any?
-      redirect_to root_path, 
-                 alert: "Missing required parameters: #{missing_params.join(', ')}"
+      redirect_to root_path,
+                        alert: "Missing required parameters: #{missing_params.join(', ')}"
     end
   end
 
@@ -165,7 +167,7 @@ class DonationsController < ApplicationController
     Stripe::PaymentMethod.attach(params[:payment_method], { 
       customer: customer.id 
     })
-    
+
     # Set default payment method on masjid's account
     Stripe::Customer.update(customer.id, {
       invoice_settings: {
@@ -195,6 +197,7 @@ class DonationsController < ApplicationController
   end
 
   def handle_donation_creation(payment_intent)
+
     if payment_intent.status == 'succeeded'
       donation = create_donation_record(payment_intent.amount)
 

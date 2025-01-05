@@ -33,7 +33,7 @@ export default class extends Controller {
       }
     });
 
-    this.showExpressCheckout()
+    // this.showExpressCheckout()
 
     // Adding Turbo Stream support
 
