@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="stripe"
 export default class extends Controller {
-  static targets = ["form", "cardElement", "errorContainer", "expressCheckoutButton"]
+  static targets = ["form", "cardElement", "errorContainer", "expressCheckoutButton", "amount"]
 
   connect() {
     console.log("hello world")
@@ -33,19 +33,30 @@ export default class extends Controller {
       }
     });
 
-    const elements = this.stripe.elements({
-      mode: 'payment',
-      amount: 1099,
-      currency: 'usd'
-    })
-    const expressCheckoutElement = elements.create('expressCheckout')
-    expressCheckoutElement.mount(this.expressCheckoutButtonTarget)
-    console.log("hello world")
-
-
     // Adding Turbo Stream support
 
   }
+
+  showExpressCheckout() {
+    console.log(this.amountTarget.value)
+    if(this.amountTarget.value > 0) {
+      const elements = this.stripe.elements({
+        mode: 'payment',
+        amount: this.amountTarget.value * 100,
+        currency: 'usd'
+      })
+      this.expressCheckoutElement = elements.create('expressCheckout')
+      this.expressCheckoutElement.mount(this.expressCheckoutButtonTarget)
+      console.log("hello world")
+    }
+    else {
+      if (this.expressCheckoutElement) {
+        this.expressCheckoutElement.unmount()
+      }
+    }
+  }
+
+
 
   // Handle form submission
   async handleSubmit(event) {
