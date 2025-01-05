@@ -1,88 +1,78 @@
-<section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-  <div class="mx-auto max-w-xl px-4 sm:px-0" data-controller="donation">
-    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl md:mb-8">Enter Details</h2>
-    <%= form_with url: masjid_fundraiser_donations_path(params[:masjid_id], @fundraiser_id), method: :post, data: { controller: "stripe", action: "submit->stripe#handleSubmit",stripe_target: "form", turbo: "false" }, class: "mx-auto max-w-xl space-y-6" do |form| %>
-      <div class="mb-6 grid grid-cols-2 gap-4">
-        <div class="col-span-2 sm:col-span-1">
-          <%= form.label :contact_first_name, "First Name", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
-          <%= form.text_field :contact_first_name, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "First name" %>
+<turbo-frame id="donation_form">
+  <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+    <div class="mx-auto max-w-xl px-4 sm:px-0" data-controller="donation">
+      <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl md:mb-8">Enter Details</h2>
+      <%= form_with url: review_masjid_fundraiser_donations_path(params[:masjid_id], @fundraiser_id), method: :post, class: "mx-auto max-w-xl space-y-6" do |form| %>
+        <div class="mb-6 grid grid-cols-2 gap-4">
+          <div class="col-span-2 sm:col-span-1">
+            <%= form.label :contact_first_name, "First Name", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
+            <%= form.text_field :contact_first_name, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "First name" %>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <%= form.label :contact_last_name, "Last Name", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
+            <%= form.text_field :contact_last_name, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "Last name" %>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <%= form.label :contact_email, "Email", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
+            <%= form.text_field :contact_email, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "Email" %>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <%= form.label :amount, "Donation Amount", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
+            <%= form.number_field :amount, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "$50", step: 0.01, min: 0,  data: { donation_target: "amount", action: "input->donation#updateTotal" } %>
+          </div>
         </div>
-        <div class="col-span-2 sm:col-span-1">
-          <%= form.label :contact_last_name, "Last Name", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
-          <%= form.text_field :contact_last_name, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "Last name" %>
-        </div>
-        <div class="col-span-2 sm:col-span-1">
-          <%= form.label :contact_email, "Email", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
-          <%= form.text_field :contact_email, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "Email" %>
-        </div>
-        <div class="col-span-2 sm:col-span-1">
-          <%= form.label :amount, "Donation Amount", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
-          <%= form.number_field :amount, class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500", required: true, placeholder: "$50", step: 0.01, min: 0,  data: { donation_target: "amount", stripe_target: "amount", action: "input->donation#updateTotal change->stripe#showExpressCheckout" } %>
-        </div>
-      </div>
-      <ul data-tabs-active-classes="text-primary-700 dark:text-white border-primary-700 dark:border-primary-500" class="grid grid-cols-2 gap-4 text-sm font-medium  md:grid-cols-2" id="payment-tab" data-tabs-toggle="#payment-tab-content" role="tablist">
-        <li role="payment">
-          <button type="button" class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700" id="credit-card-tab" data-tabs-target="#credit-card-method" data-action="click->donation#clearInstallments" role="tab" aria-controls="credit-card-method" aria-selected="false">Single Payment</button>
-        </li>
-        <li role="payment">
-          <button type="button" class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700" id="monthly-fees-tab" data-tabs-target="#monthly-fees-method" role="tab" aria-controls="monthly-fees-method" aria-selected="false">Installments</button>
-        </li>
-      </ul>
-      <div id="payment-tab-content">
-        <!-- Method 1 -->
-        <div id="credit-card-method" role="tabpanel" aria-labelledby="credit-card-tab">
-        </div>
-        <!-- Method 2 -->
-        <div class="hidden space-y-4 md:space-y-6" id="monthly-fees-method" role="tabpanel" aria-labelledby="monthly-fees-tab">
-          <div class="items-center space-y-4 sm:flex sm:space-x-4 sm:space-y-0">
-            <div class="w-full">
-              <label for="installments" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select the number of installments</label>
-              <%= form.select :installments, 
+        <ul data-tabs-active-classes="text-primary-700 dark:text-white border-primary-700 dark:border-primary-500" class="grid grid-cols-2 gap-4 text-sm font-medium  md:grid-cols-2" id="payment-tab" data-tabs-toggle="#payment-tab-content" role="tablist">
+          <li role="payment">
+            <button type="button" class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700" id="credit-card-tab" data-tabs-target="#credit-card-method" data-action="click->donation#clearInstallments" role="tab" aria-controls="credit-card-method" aria-selected="false">Single Payment</button>
+          </li>
+          <li role="payment">
+            <button type="button" class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700" id="monthly-fees-tab" data-tabs-target="#monthly-fees-method" role="tab" aria-controls="monthly-fees-method" aria-selected="false">Installments</button>
+          </li>
+        </ul>
+        <div id="payment-tab-content">
+          <!-- Method 1 -->
+          <div id="credit-card-method" role="tabpanel" aria-labelledby="credit-card-tab">
+          </div>
+          <!-- Method 2 -->
+          <div class="hidden space-y-4 md:space-y-6" id="monthly-fees-method" role="tabpanel" aria-labelledby="monthly-fees-tab">
+            <div class="items-center space-y-4 sm:flex sm:space-x-4 sm:space-y-0">
+              <div class="w-full">
+                <label for="installments" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select the number of installments</label>
+                <%= form.select :installments, 
                 [["3 months", 3], ["6 months", 6], ["12 months", 12]], 
                 {include_blank: "Select the number of months"}, 
                 class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500",
                 data: { donation_target: "installments" } %>
+              </div>
+            </div>
+            <div class="relative overflow-x-auto">
             </div>
           </div>
-          <div class="relative overflow-x-auto">
-          </div>
         </div>
-      </div>
-      <div class="mb-6">
-        <label for="card-element" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Card Details*</label>
-        <div id="card-element" data-stripe-target="cardElement" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"></div>
-        <div id="card-errors" class="text-red-500 text-sm mt-2" role="alert"></div>
-        <div id="express-checkout-button" data-stripe-target="expressCheckoutButton" class="mb-41">
-          <!-- A Stripe Payment Request Button will be inserted here -->
-        </div>
-      </div>
-      <%= form.hidden_field :payment_method, id: "payment_method" %>
-      <div class="mt-6 grow sm:mt-8 lg:mt-0">
-        <div  class="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
-          <div class="space-y-2">
-            <dl class="flex items-center justify-between gap-4">
-              <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Platform and Service fee</dt>
-              <dd data-donation-target="fees" class="text-base font-medium text-gray-900 dark:text-white"></dd>
-            </dl>
-            <dl class="flex items-center justify-between gap-4">
-              <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Masjid Receives</dt>
-              <dd class="text-base font-medium text-green-500" data-donation-target="minus"></dd>
-            </dl>
-            <div class="flex items-center">
-              <input id="fee-checkbox" type="checkbox" data-donation-target="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" data-action="change->donation#toggleFee">
-              <label for="fee-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I want to cover <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">platform and service fees</a>.</label>
+        <div class="mt-6 grow sm:mt-8 lg:mt-0">
+          <div  class="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
+            <div class="space-y-2">
+              <dl class="flex items-center justify-between gap-4">
+                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Platform and Service fee</dt>
+                <dd data-donation-target="fees" class="text-base font-medium text-gray-900 dark:text-white"></dd>
+              </dl>
+              <dl class="flex items-center justify-between gap-4">
+                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Masjid Receives</dt>
+                <dd class="text-base font-medium text-green-500" data-donation-target="minus"></dd>
+              </dl>
+              <div class="flex items-center">
+                <input id="fee-checkbox" type="checkbox" data-donation-target="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" data-action="change->donation#toggleFee">
+                <label for="fee-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I want to cover <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">platform and service fees</a>.</label>
+              </div>
+              <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+                <dt class="text-base font-bold text-gray-900 dark:text-white">Donation Total</dt>
+                <dd id="donation-total" class="text-base font-bold text-gray-900 dark:text-white" data-donation-target="total">$0.00</dd>
+              </dl>
             </div>
-            <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
-              <dt class="text-base font-bold text-gray-900 dark:text-white">Donation Total</dt>
-              <dd id="donation-total" class="text-base font-bold text-gray-900 dark:text-white" data-donation-target="total">$0.00</dd>
-            </dl>
           </div>
         </div>
-        <div class="mt-6 flex items-center justify-center gap-8">
-        </div>
-      </div>
-      <%= form.submit "Pay now", class: "flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" %>
-    <% end %>
-  </div>
-</section>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
+        <%= form.submit "Continue", class: "flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" %>
+      <% end %>
+    </div>
+  </section>
+</turbo-frame>

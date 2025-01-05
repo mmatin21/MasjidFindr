@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :fundraisers, only: [:show] do
       resources :donations, only: [:new, :create] do
         collection do
+          post :review
           get :payment_confirmation
         end
       end

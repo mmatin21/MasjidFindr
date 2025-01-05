@@ -33,25 +33,32 @@ export default class extends Controller {
       }
     });
 
+    this.showExpressCheckout()
+
     // Adding Turbo Stream support
 
   }
 
   showExpressCheckout() {
-    console.log(this.amountTarget.value)
-    if(this.amountTarget.value > 0) {
+    const amountInCents = parseInt(this.amountTarget.value, 10);
+
+    if (amountInCents > 0 && !isNaN(amountInCents)) {
+      // Unmount existing element if it exists
+      if (this.expressCheckoutElement) {
+        this.expressCheckoutElement.unmount();
+      }
+      
       const elements = this.stripe.elements({
         mode: 'payment',
-        amount: this.amountTarget.value * 100,
+        amount: amountInCents,
         currency: 'usd'
-      })
-      this.expressCheckoutElement = elements.create('expressCheckout')
-      this.expressCheckoutElement.mount(this.expressCheckoutButtonTarget)
-      console.log("hello world")
-    }
-    else {
+      });
+      
+      this.expressCheckoutElement = elements.create('expressCheckout');
+      this.expressCheckoutElement.mount(this.expressCheckoutButtonTarget);
+    } else {
       if (this.expressCheckoutElement) {
-        this.expressCheckoutElement.unmount()
+        this.expressCheckoutElement.unmount();
       }
     }
   }

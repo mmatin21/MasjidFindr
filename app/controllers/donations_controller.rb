@@ -13,9 +13,29 @@ class DonationsController < ApplicationController
     Rails.logger.debug "Donation: #{params[:donation]}"
     @donation = params[:donation] # If needed, retrieve donation details
     if @donation.present?
-      @amount = @donation['amount'].to_f
+      @amount = @donation['amount'].to_f.round(2)
       @amount = (@amount + 0.30) / (1 - 0.039)
       @contact = @donation['contact']
+    end
+  end
+
+  def review
+    @masjid_id = params[:masjid_id]
+    @fundraiser_id = params[:fundraiser_id]
+    @amount = params[:amount].to_f
+    Rails.logger.debug "Amount: #{@amount}"
+    @contact_email = params[:contact_email]
+    @contact_name = params[:contact_first_name] + " " + params[:contact_last_name]
+    @amount_in_cents = (@amount * 100).to_i
+    Rails.logger.debug "Amount in cents: #{@amount_in_cents}"
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.update(
+          "donation_form",
+          partial: "donations/review"
+        )
+      end
     end
   end
 
