@@ -24,7 +24,6 @@ class DonationsController < ApplicationController
     # Step 1: Parameter validation
     validation_result = validate_donation_params
     return validation_result if validation_result
-
     # Step 2: Amount processing and validation
     amount_result = process_amount
     return amount_result if amount_result.is_a?(ActionController::Base)
@@ -36,17 +35,28 @@ class DonationsController < ApplicationController
     masjid = masjid_result
 
     # Step 4: Process payment
-    payment_result = process_stripe_payment(amount, masjid)
-    Rails.logger.debug "Payment result: #{payment_result}"
-    return payment_result if payment_result.is_a?(ActionController::Base)
-    payment_intent = payment_result
+    if params[:installments].present?
+      installment_duration = params[:installments].to_i
+      customer = create_stripe_customer(params[:contact_email])
 
-    # Step 5: Create donation record
+      payment_result = process_stripe_installments(masjid, customer, amount, installment_duration)
+      return payment_result if payment_result.is_a?(ActionController::Base)
+      payment_intent = payment_result
+      handle_pledge_creation(payment_intent)
+    else
+      payment_result = process_stripe_payment(amount, masjid)
+      return payment_result if payment_result.is_a?(ActionController::Base)
+      payment_intent = payment_result
+      # Step 5: Create donation record
     handle_donation_creation(payment_intent)
+    end
+
+    
   rescue Stripe::StripeError => e
     handle_stripe_error(e)
   rescue StandardError => e
     handle_general_error(e)
+
   end
 
   private
@@ -102,6 +112,37 @@ class DonationsController < ApplicationController
     )
   end
 
+  def process_stripe_installments(masjid, customer, amount, installment_months)
+    # Calculate platform fee (1%) - amount is in cents
+    installment_amount = (amount / installment_months).round(2)
+    platform_fee = (installment_amount * 0.01).round
+    Stripe::PaymentMethod.attach(params[:payment_method], { customer: customer.id })
+
+    installment_months.times do |month|
+      due_date = Time.now + (month * 30 * 24 * 60 * 60) # Approximate due date for each installment
+
+      Stripe::PaymentIntent.create({
+        amount: installment_amount,
+        currency: 'usd',
+        customer: customer.id,
+        payment_method: params[:payment_method],
+        confirm: true, # Automatically confirm the payment
+        description: "Installment #{month + 1} of #{installment_months}",
+        application_fee_amount: platform_fee,
+        transfer_data: {
+          destination: masjid
+        },
+        return_url: masjid_fundraiser_url(params[:masjid_id], params[:fundraiser_id]),
+        metadata: {
+          total_amount: amount,
+          installment_number: month + 1,
+          total_installments: installment_months,
+          due_date: due_date.to_s
+        }
+      })
+    end
+  end
+
   def handle_donation_creation(payment_intent)
     if payment_intent.status == 'succeeded'
       donation = create_donation_record(payment_intent.amount)
@@ -145,5 +186,11 @@ class DonationsController < ApplicationController
 
   def handle_general_error(error)
     redirect_to payment_confirmation_masjid_fundraiser_donations_path(error: error.message)
+  end
+
+  def create_stripe_customer(email)
+    Stripe::Customer.create({
+      email: email
+    })
   end
 end

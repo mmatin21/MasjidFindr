@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="stripe"
 export default class extends Controller {
-  static targets = ["form", "cardElement", "achElement", "errorContainer"]
+  static targets = ["form", "cardElement", "errorContainer"]
 
   isCardMode = true
   connect() {

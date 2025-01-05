@@ -1,7 +1,7 @@
 <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
   <div class="mx-auto max-w-xl px-4 sm:px-0" data-controller="donation">
     <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl md:mb-8">Choose payment type</h2>
-      <%= form_with url: masjid_fundraiser_donations_path(params[:masjid_id], @fundraiser_id), method: :post, data: { controller: "stripe", action: "submit->stripe#handleSubmit",stripe_target: "form", turbo: "false" }, class: "mx-auto max-w-xl space-y-6" do |form| %>
+    <%= form_with url: masjid_fundraiser_donations_path(params[:masjid_id], @fundraiser_id), method: :post, data: { controller: "stripe", action: "submit->stripe#handleSubmit",stripe_target: "form", turbo: "false" }, class: "mx-auto max-w-xl space-y-6" do |form| %>
       <div class="mb-6 grid grid-cols-2 gap-4">
         <div class="col-span-2 sm:col-span-1">
           <%= form.label :contact_first_name, "First Name", class: "mb-2 block text-sm font-medium text-gray-900 dark:text-white" %>
@@ -37,147 +37,61 @@
       <div id="payment-tab-content">
         <!-- Method 1 -->
         <div id="credit-card-method" role="tabpanel" aria-labelledby="credit-card-tab">
-          <div class="mb-6">
-            <label for="card-element" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Card Details*</label>
-            <div id="card-element" data-stripe-target="cardElement" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"></div>
-            <div id="card-errors" class="text-red-500 text-sm mt-2" role="alert"></div>
-          </div>
         </div>
         <!-- Method 2 -->
         <div class="hidden space-y-4 md:space-y-6" id="monthly-fees-method" role="tabpanel" aria-labelledby="monthly-fees-tab">
           <div class="items-center space-y-4 sm:flex sm:space-x-4 sm:space-y-0">
             <div class="w-full">
               <label for="installments" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Select the number of installments</label>
-              <select id="installments" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                <option selected>24 months</option>
-                <option value="12">12 months</option>
-                <option value="24">24 months</option>
-                <option value="48">48 months</option>
-                <option value="64">64 months</option>
-              </select>
-            </div>
-            <div class="w-full">
-              <label for="occupation" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Occupation</label>
-              <select id="occupation" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                <option selected>Student</option>
-                <option value="freelancer">Freelancer</option>
-                <option value="owner">Business owner</option>
-                <option value="retired">Retired</option>
-              </select>
+              <%= form.select :installments, 
+                [["3 months", 3], ["6 months", 6], ["12 months", 12]], 
+                {include_blank: "Select the number of months"}, 
+                class: "block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" %>
             </div>
           </div>
           <div class="relative overflow-x-auto">
-            <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
-              <thead class="bg-gray-50 text-xs uppercase text-gray-500 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                  <th scope="col" class="rounded-tl-md px-6 py-3 font-semibold">Bank</th>
-                  <th scope="col" class="shrink-0 px-6 py-3 font-semibold">
-                    <span class="shrink-0">Monthly payment</span>
-                  </th>
-                  <th scope="col" class="rounded-tr-md">
-                    <span class="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
-                    <div class="flex items-center">
-                      <input id="credit-method-radio-1" type="radio" value="" name="credit-method-radio" class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                      <label for="credit-method-radio-1" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Flowbite Bank</label>
-                    </div>
-                  </th>
-                  <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">$49/month</td>
-                  <td class="px-6 py-4">
-                    <a href="#" class="flex items-center font-medium text-primary-700 hover:underline dark:text-primary-500">
-                      <svg class="me-2 h-4 w-4 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
-                        <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                      </svg>
-                      <span class="shrink-0">View details</span>
-                    </a>
-                  </td>
-                </tr>
-                <tr class="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
-                    <div class="flex items-center">
-                      <input id="credit-method-radio-2" type="radio" value="" name="credit-method-radio" class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                      <label for="credit-method-radio-2" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">JPMorgan Bank</label>
-                    </div>
-                  </th>
-                  <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">$39/month</td>
-                  <td class="px-6 py-4">
-                    <a href="#" class="inline-flex items-center font-medium text-primary-700 hover:underline dark:text-primary-500">
-                      <svg class="me-2 h-4 w-4 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
-                        <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                      </svg>
-                      <span class="shrink-0">View details</span>
-                    </a>
-                  </td>
-                </tr>
-                <tr class="bg-white dark:bg-gray-800">
-                  <th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
-                    <div class="flex items-center">
-                      <input id="credit-method-radio-3" type="radio" value="" name="credit-method-radio" class="h-4 w-4 border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                      <label for="credit-method-radio-3" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Wells Fargo Bank</label>
-                    </div>
-                  </th>
-                  <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">$59/month</td>
-                  <td class="px-6 pt-4">
-                    <a href="#" class="inline-flex items-center font-medium text-primary-700 hover:underline dark:text-primary-500">
-                      <svg class="me-2 h-4 w-4 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
-                        <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                      </svg>
-                      <span class="shrink-0">View details</span>
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="flex items-start">
-            <input id="default-checkbox" type="checkbox" value="" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-            <label for="default-checkbox" class="-mt-0.5 ms-2 text-sm text-gray-500 dark:text-gray-300">I have taken note <a href="#" class="font-medium text-primary-700 hover:underline dark:text-primary-500">of the information note regarding the processing of personal data</a> by JPMorgan Bank</label>
           </div>
         </div>
         <!-- Method 3 -->
         <div class="hidden" id="crypto-method" role="tabpanel" aria-labelledby="crypto-tab">
-          </div>
+        </div>
         <!-- Method 4 -->
         <%# <div class="hidden" id="paypal-method" role="tabpanel" aria-labelledby="paypal-tab">
 
         </div> %>
       </div>
+      <div class="mb-6">
+        <label for="card-element" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Card Details*</label>
+        <div id="card-element" data-stripe-target="cardElement" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"></div>
+        <div id="card-errors" class="text-red-500 text-sm mt-2" role="alert"></div>
+      </div>
       <%= form.hidden_field :payment_method, id: "payment_method" %>
-        <div class="mt-6 grow sm:mt-8 lg:mt-0">
-          <div  class="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
-            <div class="space-y-2">
-              <dl class="flex items-center justify-between gap-4">
-                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Platform and Service fee</dt>
-                <dd data-donation-target="fees" class="text-base font-medium text-gray-900 dark:text-white"></dd>
-              </dl>
-              <dl class="flex items-center justify-between gap-4">
-                <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Masjid Receives</dt>
-                <dd class="text-base font-medium text-green-500" data-donation-target="minus"></dd>
-              </dl>
-              <div class="flex items-center">
-                <input id="fee-checkbox" type="checkbox" data-donation-target="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" data-action="change->donation#toggleFee">
-                <label for="fee-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I want to cover <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">platform and service fees</a>.</label>
-              </div>
-              <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
-                <dt class="text-base font-bold text-gray-900 dark:text-white">Donation Total</dt>
-                <dd id="donation-total" class="text-base font-bold text-gray-900 dark:text-white" data-donation-target="total">$0.00</dd>
-              </dl>
+      <div class="mt-6 grow sm:mt-8 lg:mt-0">
+        <div  class="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
+          <div class="space-y-2">
+            <dl class="flex items-center justify-between gap-4">
+              <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Platform and Service fee</dt>
+              <dd data-donation-target="fees" class="text-base font-medium text-gray-900 dark:text-white"></dd>
+            </dl>
+            <dl class="flex items-center justify-between gap-4">
+              <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Masjid Receives</dt>
+              <dd class="text-base font-medium text-green-500" data-donation-target="minus"></dd>
+            </dl>
+            <div class="flex items-center">
+              <input id="fee-checkbox" type="checkbox" data-donation-target="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" data-action="change->donation#toggleFee">
+              <label for="fee-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I want to cover <a href="#" class="text-blue-600 dark:text-blue-500 hover:underline">platform and service fees</a>.</label>
             </div>
-          </div>
-          <div class="mt-6 flex items-center justify-center gap-8">
+            <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+              <dt class="text-base font-bold text-gray-900 dark:text-white">Donation Total</dt>
+              <dd id="donation-total" class="text-base font-bold text-gray-900 dark:text-white" data-donation-target="total">$0.00</dd>
+            </dl>
           </div>
         </div>
+        <div class="mt-6 flex items-center justify-center gap-8">
+        </div>
+      </div>
       <%= form.submit "Pay now", class: "flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" %>
     <% end %>
   </div>
 </section>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
