@@ -95,7 +95,7 @@ class DonationsController < ApplicationController
   def process_stripe_payment(amount, masjid)
     # Calculate platform fee (1%) - amount is in cents
     platform_fee = (amount * 0.01).round
-    Stripe::PaymentIntent.create(
+    payment = Stripe::PaymentIntent.create(
       amount: amount,
       currency: 'usd',
       payment_method: params[:payment_method],
@@ -107,6 +107,7 @@ class DonationsController < ApplicationController
       },
       return_url: masjid_fundraiser_url(params[:masjid_id], params[:fundraiser_id])
     )
+    render json: { clientSecret: payment.client_secret }
   end
 
   def create_stripe_subscription(masjid, customer, amount, installment_months)

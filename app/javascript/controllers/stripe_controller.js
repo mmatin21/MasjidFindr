@@ -2,9 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="stripe"
 export default class extends Controller {
-  static targets = ["form", "cardElement", "errorContainer"]
+  static targets = ["form", "cardElement", "errorContainer", "expressCheckoutButton"]
 
-  isCardMode = true
   connect() {
     console.log("hello world")
     this.stripe = Stripe(stripePublishableKey); // Your publishable key
@@ -24,7 +23,7 @@ export default class extends Controller {
       },
     });
     this.card.mount(this.cardElementTarget);
-
+    
     this.card.on("change", (event) => {
       const displayError = document.getElementById("card-errors");
       if (event.error) {
@@ -34,6 +33,13 @@ export default class extends Controller {
       }
     });
 
+    const elements = this.stripe.elements({
+      mode: 'payment',
+      amount: 1099,
+      currency: 'usd'
+    })
+    const expressCheckoutElement = elements.create('expressCheckout')
+    expressCheckoutElement.mount(this.expressCheckoutButtonTarget)
     console.log("hello world")
 
 
