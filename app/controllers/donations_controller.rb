@@ -4,7 +4,6 @@ class DonationsController < ApplicationController
   def new
     @fundraiser_id = params[:fundraiser_id]
     Rails.logger.debug "Fundraiser: #{params}"
-
   end
 
   def payment_confirmation
@@ -39,24 +38,22 @@ class DonationsController < ApplicationController
       installment_duration = params[:installments].to_i
       customer = create_stripe_customer(params[:contact_email])
 
-      payment_result = process_stripe_installments(masjid, customer, amount, installment_duration)
-      return payment_result if payment_result.is_a?(ActionController::Base)
-      payment_intent = payment_result
-      handle_pledge_creation(payment_intent)
+      # Create a subscription instead of multiple payment intents
+      subscription_result = create_stripe_subscription(masjid, customer, amount, installment_duration)
+      return subscription_result if subscription_result.is_a?(ActionController::Base)
+      subscription = subscription_result
     else
       payment_result = process_stripe_payment(amount, masjid)
       return payment_result if payment_result.is_a?(ActionController::Base)
       payment_intent = payment_result
       # Step 5: Create donation record
-    handle_donation_creation(payment_intent)
+      handle_donation_creation(payment_intent)
     end
 
-    
   rescue Stripe::StripeError => e
     handle_stripe_error(e)
   rescue StandardError => e
     handle_general_error(e)
-
   end
 
   private
@@ -112,35 +109,60 @@ class DonationsController < ApplicationController
     )
   end
 
-  def process_stripe_installments(masjid, customer, amount, installment_months)
-    # Calculate platform fee (1%) - amount is in cents
-    installment_amount = (amount / installment_months).round(2)
-    platform_fee = (installment_amount * 0.01).round
-    Stripe::PaymentMethod.attach(params[:payment_method], { customer: customer.id })
+  def create_stripe_subscription(masjid, customer, amount, installment_months)
+    # Calculate monthly amount and platform fee
+    monthly_amount = (amount / installment_months).round
+    platform_fee = 1.0
 
-    installment_months.times do |month|
-      due_date = Time.now + (month * 30 * 24 * 60 * 60) # Approximate due date for each installment
+    # Create a product for this donation plan
+    # Create product on masjid's Stripe account
+    product = Stripe::Product.create({
+      name: "Monthly Donation Plan",
+      type: 'service'
+    })
 
-      Stripe::PaymentIntent.create({
-        amount: installment_amount,
-        currency: 'usd',
-        customer: customer.id,
-        payment_method: params[:payment_method],
-        confirm: true, # Automatically confirm the payment
-        description: "Installment #{month + 1} of #{installment_months}",
-        application_fee_amount: platform_fee,
-        transfer_data: {
-          destination: masjid
-        },
-        return_url: masjid_fundraiser_url(params[:masjid_id], params[:fundraiser_id]),
-        metadata: {
-          total_amount: amount,
-          installment_number: month + 1,
-          total_installments: installment_months,
-          due_date: due_date.to_s
-        }
-      })
-    end
+    # Create price on masjid's Stripe account
+    price = Stripe::Price.create({
+      product: product.id,
+      unit_amount: monthly_amount,
+      currency: 'usd',
+      recurring: {
+        interval: 'month',
+        interval_count: 1
+      }
+    })
+
+    # Attach payment method to customer on masjid's account
+    Stripe::PaymentMethod.attach(params[:payment_method], { 
+      customer: customer.id 
+    })
+    
+    # Set default payment method on masjid's account
+    Stripe::Customer.update(customer.id, {
+      invoice_settings: {
+        default_payment_method: params[:payment_method],
+      }
+    })
+
+    # Create subscription on masjid's account
+    Stripe::Subscription.create({
+      customer: customer.id,
+      items: [{ price: price.id }],
+      metadata: {
+        total_amount: amount,
+        total_installments: installment_months,
+        masjid_id: params[:masjid_id],
+        fundraiser_id: params[:fundraiser_id]
+      },
+      application_fee_percent: platform_fee,
+      transfer_data: {
+        destination: masjid,
+      },
+      cancel_at: (Time.now + (installment_months * 30 * 24 * 60 * 60)).to_i
+    })
+
+    redirect_to masjid_fundraiser_url(params[:masjid_id], params[:fundraiser_id]), 
+                    alert: 'Failed to create donation record. Payment has been refunded.'
   end
 
   def handle_donation_creation(payment_intent)
