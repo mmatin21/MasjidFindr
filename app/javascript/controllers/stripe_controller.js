@@ -15,10 +15,7 @@ export default class extends Controller {
           color: "#9ca3af", // dark:text-white equivalent
          
        // border-gray-300 equivalent
-          borderRadius: "0.375rem", // rounded-lg equivalent
-          padding: "0.650rem", // p-2.5 equivalent
-          fontSize: "0.875rem", // text-sm equivalent
-          fontSmooth: "always",
+          fontSize: "px-2", // text-sm equivalent
           fontFamily: "'Inter', sans-serif", // Matches Tailwind's default font
           "::placeholder": {
             color: "#9ca3af", // dark:placeholder:text-gray-400 equivalent
@@ -26,11 +23,7 @@ export default class extends Controller {
         },
         invalid: {
           color: "#ef4444", // Red for invalid text
-        },
-        focus: {
-          border: "1px solid #3b82f6", // focus:border-primary-500 equivalent
-          outline: "none", // Matches focus:ring
-        },
+        }
       },
     });  
     this.card.mount(this.cardElementTarget);

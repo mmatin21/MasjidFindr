@@ -6,6 +6,7 @@ export default class extends Controller {
 
   connect() {
     this.updateTotal(); // Initialize the total on page load
+    console.log("hello world")
   }
 
   updateTotal() {
