@@ -8,13 +8,14 @@
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= tag.script src: "https://maps.googleapis.com/maps/api/js?key=#{Rails.application.credentials.dig(:google_api_keys, :places_key)}&libraries=places", async: true, defer: true %>
     <script src="https://js.stripe.com/v3/"></script>
     <script>
       const stripePublishableKey = "<%= Rails.application.credentials.stripe[:publishable_key] %>";
     </script>
   </head>
   <body class="bg-white dark:bg-gray-900">
-    <main>
+    <main class="container mx-auto mt-28 px-5 flex">
       <%= turbo_frame_tag "turbo-modal" %>
       <%= yield %>
     </main>
