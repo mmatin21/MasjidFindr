@@ -1,38 +1,41 @@
 <section class="bg-white dark:bg-gray-900">
   <div class="py-8 mx-auto max-w-6xl lg:py-16">
-      <div class="grid gap-4 px-4 mb-4 sm:mb-5 sm:grid-cols-3 sm:gap-6 md:gap-12">
-          <!-- Column -->
-          <div class="sm:col-span-2">
-              <h2 class="flex items-center mb-4 text-xl font-bold leading-none text-gray-900 sm:text-2xl dark:text-white sm:mb-5">
-                  <%= @fundraiser['name'] %>
-              </h2>
-              <dl class="flex items-center mb-4 space-x-4 sm:mb-5">
-                  <div>
-                      <dt class="sr-only">Date</dt>
-                      <dd class="flex items-center text-gray-900 dark:text-white">
-                          <svg class="w-4 h-4 mr-1.5 text-gray-400 dark:text-gray-500" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
-                          <span class="font-semibold">26th of November, 2022</span>
-                      </dd>
-                  </div>
-                  <div>
-                      <dt class="sr-only">Goal Amount</dt>
-                      <dd class="flex items-center text-gray-900 dark:text-white">
-                          <svg class="w-4 h-4 mr-1.5 text-gray-400 dark:text-gray-500" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-                          <span class="font-semibold"><%= number_to_currency(@fundraiser['goalAmount']) %></span>
-                      </dd>
-                  </div>
-              </dl>
-              <dl>
-                  <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Details:</dt>
-                  <dd class="font-light text-gray-500 dark:text-gray-400">
-                    <%= @fundraiser['description'] %>                  
-                  </dd>
-              </dl>
+    <div class="grid gap-4 px-4 mb-4 sm:mb-5 sm:grid-cols-3 sm:gap-6 md:gap-12">
+      <!-- Column -->
+      <div class="sm:col-span-2">
+        <h2 class="flex items-center mb-4 text-xl font-bold leading-none text-gray-900 sm:text-2xl dark:text-white sm:mb-5">
+          <%= @fundraiser['name'] %>
+        </h2>
+        <dl class="flex items-center mb-4 space-x-4 sm:mb-5">
+          <div>
+            <dt class="sr-only">Date</dt>
+            <dd class="flex items-center text-gray-900 dark:text-white">
+              <svg class="w-4 h-4 mr-1.5 text-gray-400 dark:text-gray-500" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+              <span class="font-semibold">26th of November, 2022</span>
+            </dd>
           </div>
+          <div>
+            <dt class="sr-only">Goal Amount</dt>
+            <dd class="flex items-center text-gray-900 dark:text-white">
+              <svg class="w-4 h-4 mr-1.5 text-gray-400 dark:text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" d="M12 14a3 3 0 0 1 3-3h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4a3 3 0 0 1-3-3Zm3-1a1 1 0 1 0 0 2h4v-2h-4Z" clip-rule="evenodd"/>
+                <path fill-rule="evenodd" d="M12.293 3.293a1 1 0 0 1 1.414 0L16.414 6h-2.828l-1.293-1.293a1 1 0 0 1 0-1.414ZM12.414 6 9.707 3.293a1 1 0 0 0-1.414 0L5.586 6h6.828ZM4.586 7l-.056.055A2 2 0 0 0 3 9v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2h-4a5 5 0 0 1 0-10h4a2 2 0 0 0-1.53-1.945L17.414 7H4.586Z" clip-rule="evenodd"/>
+              </svg>
+              <span class="font-semibold"><%= number_to_currency(@fundraiser['goalAmount']) %></span>
+            </dd>
+          </div>
+        </dl>
+        <dl>
+          <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Details:</dt>
+          <dd class="font-light text-gray-500 dark:text-gray-400">
+            <%= @fundraiser['description'] %>
+          </dd>
+        </dl>
       </div>
-      <div class="flex items-center px-4 space-x-4">
-        <%= link_to 'Donate Now', new_masjid_fundraiser_donation_path(@fundraiser['masjidId'], @fundraiser['id'] ), class: "py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>          
-        <%= link_to 'Back to Masjid', masjid_path(params[:masjid_id]), class: "py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>          
-      </div>
+    </div>
+    <div class="flex items-center px-4 space-x-4">
+      <%= link_to 'Donate Now', new_masjid_fundraiser_donation_path(@fundraiser['masjidId'], @fundraiser['id'] ), class: "py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>
+      <%= link_to 'Back to Masjid', masjid_path(params[:masjid_id]), class: "py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>
+    </div>
   </div>
 </section>
