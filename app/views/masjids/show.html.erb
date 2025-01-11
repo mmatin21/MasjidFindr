@@ -20,7 +20,7 @@
       </li>
     </ul>
   </div>
-  <% if params[:fundraisers].present? %>
+  <% if params[:fundraisers].present? && @masjid_stripe_account_id %>
     <%= render 'fundraisers', fundraisers: @fundraisers %>
   <% elsif params[:events].present? %>
     <%= render 'events', events: @events %>

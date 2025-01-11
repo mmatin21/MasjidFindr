@@ -70,7 +70,7 @@ class MasjidsController < ApplicationController
       @masjid_id = params[:id]
       masjid_data = GraphQlService.fetch_masjid_by_id(@masjid_id)
       @masjid_name = masjid_data['data']['masjidById'][0]['name']
-
+      @masjid_stripe_account_id = masjid_data['data']['masjidById'][0]['stripeAccountId'].present?
 
       @fundraisers = masjid_data['data']['masjidById'][0]['fundraisers']
       @events = masjid_data['data']['masjidById'][0]['events']
