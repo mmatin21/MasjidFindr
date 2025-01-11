@@ -77,3 +77,5 @@ group :test do
   gem "selenium-webdriver"
 
 end
+
+gem "geocoder", "~> 1.8"
