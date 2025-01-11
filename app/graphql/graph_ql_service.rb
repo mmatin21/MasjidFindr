@@ -95,33 +95,4 @@ class GraphQlService
 
     execute_query(query)
   end
-
-  def self.create_donation(fundraiser_id, amount, contact_email, contact_first_name, contact_last_name, contact_phone_number)
-    query = <<~GRAPHQL
-      mutation {
-        createDonation(input: {
-          fundraiserId: #{fundraiser_id},
-          amount: #{amount},
-          contactEmail: "#{contact_email}",
-          contactFirstName: "#{contact_first_name}",
-          contactLastName: "#{contact_last_name}",
-          contactPhoneNumber: "#{contact_phone_number}"
-        }) {
-          donation {
-            fundraiserId
-            amount
-            contact {
-              id
-              email
-              firstName
-              lastName
-              phoneNumber
-            }
-          }
-        }
-      }
-    GRAPHQL
-
-    execute_query(query)
-  end
 end
