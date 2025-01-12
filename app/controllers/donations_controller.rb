@@ -12,7 +12,17 @@ class DonationsController < ApplicationController
     @error_message = params[:error_message]
     @donation = params[:donation] # If needed, retrieve donation details
 
-    if @donation.present?
+    if params[:subscription] == "true"
+      if @donation.present?
+        @amount = (@donation['amount'].to_f / 100.0) / @donation['total_installments'].to_f
+        @contact_email = @donation['contact_email']
+        @contact_first_name = @donation['contact_first_name']
+        @contact_last_name = @donation['contact_last_name']
+        if @donation['installments'].present?
+          @installments = @donation['installments'].to_i
+        end
+      end
+    elsif @donation.present?
       @amount = @donation['amount'].to_f / 100.0
       @contact_email = @donation['contact_email']
       @contact_first_name = @donation['contact_first_name']
@@ -72,6 +82,8 @@ class DonationsController < ApplicationController
       return subscription_result if subscription_result.is_a?(ActionController::Base)
 
       subscription = subscription_result
+
+      handle_subscription_creation(subscription)
     else
       payment_result = process_stripe_payment(amount, masjid)
       return payment_result if payment_result.is_a?(ActionController::Base)
@@ -152,7 +164,7 @@ class DonationsController < ApplicationController
   def create_stripe_subscription(masjid, customer, amount, installment_months)
     # Calculate monthly amount and platform fee
     monthly_amount = (amount / installment_months).round
-    platform_fee = 1.0
+    platform_fee = 3.9
 
     # Create a product for this donation plan
     # Create product on masjid's Stripe account
@@ -185,17 +197,18 @@ class DonationsController < ApplicationController
     })
 
     # Create subscription on masjid's account
-    Stripe::Subscription.create({
+    subscription = Stripe::Subscription.create({
       customer: customer.id,
       items: [{ price: price.id }],
       metadata: {
-        total_amount: amount,
+        amount: amount,
         total_installments: installment_months,
         masjid_id: params[:masjid_id],
         fundraiser_id: params[:fundraiser_id],
         contact_email: params[:contact_email],
         contact_first_name: params[:contact_first_name],
         contact_last_name: params[:contact_last_name],
+        fee: platform_fee
       },
       application_fee_percent: platform_fee,
       transfer_data: {
@@ -203,9 +216,6 @@ class DonationsController < ApplicationController
       },
       cancel_at: (Time.now + (installment_months * 30 * 24 * 60 * 60)).to_i
     })
-
-    redirect_to masjid_fundraiser_url(params[:masjid_id], params[:fundraiser_id]), 
-                    alert: 'Failed to create donation record. Payment has been refunded.'
   end
 
   def handle_donation_creation(payment_intent)
@@ -218,6 +228,14 @@ class DonationsController < ApplicationController
     else
       redirect_to payment_confirmation_masjid_fundraiser_donations_path(error_message: 'Payment failed')
     end
+  end
+
+  def handle_subscription_creation(subscription)
+    redirect_to payment_confirmation_masjid_fundraiser_donations_path(
+      success: true,
+      donation: subscription.metadata.to_h,
+      subscription: true
+    )
   end
 
   def refund_payment(payment_intent_id)
