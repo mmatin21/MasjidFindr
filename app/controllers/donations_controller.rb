@@ -13,7 +13,7 @@ class DonationsController < ApplicationController
 
     return unless @donation.present?
 
-    @amount = @donation['amount'].to_f
+    @amount = @donation['amount'].to_f / 100
     @contact_email = @donation['contact_email']
     @contact_first_name = @donation['contact_first_name']
     @contact_last_name = @donation['contact_last_name']
@@ -28,13 +28,28 @@ class DonationsController < ApplicationController
     @contact_last_name = params[:contact_last_name]
     @contact_name = @contact_first_name + ' ' + @contact_last_name
     @amount_in_cents = (@amount * 100).to_i
-    payment_intent = create_payment_intent
+
+    payment_intent = get_payment_intent
     @client_secret = payment_intent.client_secret
-    @payment_intent_id = payment_intent.id
+    session[:payment_intent_id] = payment_intent.id
   end
 
   def create
-    # Step 1: Parameter validation
+    payment_intent_id = session[:payment_intent_id]
+    session.delete(:payment_intent_id)
+    Rails.logger.debug "Payment intent ID: #{payment_intent_id}"
+
+    payment_intent = retrieve_payment_intent(payment_intent_id)
+    handle_donation_creation(payment_intent)
+  rescue Stripe::StripeError => e
+    handle_stripe_error(e)
+  rescue StandardError => e
+    handle_general_error(e)
+  end
+
+  private
+
+  def get_payment_intent
     validation_result = validate_donation_params
     return validation_result if validation_result
 
@@ -50,39 +65,15 @@ class DonationsController < ApplicationController
 
     masjid = masjid_result
 
-    # Step 4: Process payment
-    Rails.logger.debug 'Proccessing Payment'
-    payment_result = process_stripe_payment(amount, masjid, params[:payment_intent_id])
+    fee_result = process_fee
+    return fee_result if fee_result.is_a?(ActionController::Base)
+
+    fee = fee_result
+
+    payment_result = create_stripe_payment_intent(amount, masjid, fee)
     return payment_result if payment_result.is_a?(ActionController::Base)
 
-    payment_intent = payment_result
-
-    # Step 5: Create donation record
-    handle_donation_creation(payment_intent)
-  rescue Stripe::StripeError => e
-    handle_stripe_error(e)
-  rescue StandardError => e
-    handle_general_error(e)
-  end
-
-  private
-
-  def create_payment_intent
-    amount_in_cents = (params[:amount].to_f * 100).to_i
-    platform_fee = ((amount_in_cents * 0.039) + 30).round
-    Stripe::PaymentIntent.create(
-      amount: amount_in_cents,
-      currency: 'usd',
-      metadata: {
-        amount: params[:amount],
-        masjid_id: params[:masjid_id],
-        fundraiser_id: params[:fundraiser_id],
-        contact_email: params[:contact_email],
-        contact_first_name: params[:contact_first_name],
-        contact_last_name: params[:contact_last_name],
-        fee: platform_fee
-      }
-    )
+    payment_result
   end
 
   def validate_donation_params
@@ -103,6 +94,11 @@ class DonationsController < ApplicationController
     amount
   end
 
+  def process_fee
+    amount_in_cents = (params[:amount].to_f * 100).to_i
+    ((amount_in_cents * 0.039) + 30).round
+  end
+
   def fetch_and_validate_masjid
     masjid_data = GraphQlService.fetch_masjid_by_id(params[:masjid_id])
 
@@ -117,8 +113,27 @@ class DonationsController < ApplicationController
     masjid
   end
 
-  def process_stripe_payment(_amount, _masjid, payment_intent_id)
-    # Calculate platform fee (1%) - amount is in cents
+  def create_stripe_payment_intent(amount, masjid, fee)
+    Stripe::PaymentIntent.create(
+      amount: amount,
+      currency: 'usd',
+      metadata: {
+        amount: amount,
+        masjid_id: params[:masjid_id],
+        fundraiser_id: params[:fundraiser_id],
+        contact_email: params[:contact_email],
+        contact_first_name: params[:contact_first_name],
+        contact_last_name: params[:contact_last_name],
+        fee: fee
+      },
+      application_fee_amount: fee,
+      transfer_data: {
+        destination: masjid
+      }
+    )
+  end
+
+  def retrieve_payment_intent(payment_intent_id)
     Stripe::PaymentIntent.retrieve(payment_intent_id)
   end
 
