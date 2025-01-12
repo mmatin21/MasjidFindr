@@ -125,7 +125,7 @@ class DonationsController < ApplicationController
 
   def process_stripe_payment(amount, masjid)
     # Calculate platform fee (1%) - amount is in cents
-    platform_fee = (amount * 0.01).round
+    platform_fee = ((amount * 0.039) + 30).round
     Stripe::PaymentIntent.create(
       amount: amount,
       currency: 'usd',
