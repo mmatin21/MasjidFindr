@@ -6,7 +6,6 @@ export default class extends Controller {
 
   connect() {
     this.updateTotal(); // Initialize the total on page load
-    console.log("hello world")
   }
 
   updateTotal() {
@@ -40,12 +39,5 @@ export default class extends Controller {
       this.amountTarget.value = this.amountTarget.value > 0 ? ((amount + fixedFee)/(1-percentFee)).toFixed(2) : 0
     }
     this.updateTotal()
-  }
-
-  clearInstallments() {
-    console.log("clearInstallments")
-    this.installmentsTarget.value = null
-    console.log(this.installmentsTarget.value)
-
   }
 }

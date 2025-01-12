@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["form", "cardElement", "errorContainer", "expressCheckoutButton", "amount"]
 
   connect() {
-    console.log("hello world")
     this.stripe = Stripe(stripePublishableKey); // Your publishable key
     this.elements = this.stripe.elements();
     this.card = this.elements.create("card", {
@@ -84,7 +83,6 @@ export default class extends Controller {
       this.formTarget.appendChild(paymentMethodInput);
 
       // Submit the form after attaching the payment method
-      console.log('Submitting form with payment method:', paymentMethod.id)
       this.formTarget.submit();
     }
   }

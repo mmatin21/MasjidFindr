@@ -4,7 +4,7 @@ require 'uri'
 require 'json'
 
 class GraphQlService
-  BASE_URL = 'http://localhost:3001/graphql'
+  BASE_URL = 'https://mosqueapp-test.onrender.com/graphql'
 
   class << self
     private

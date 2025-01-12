@@ -12,17 +12,7 @@ class DonationsController < ApplicationController
     @error_message = params[:error_message]
     @donation = params[:donation] # If needed, retrieve donation details
 
-    if params[:subscription] == "true"
-      if @donation.present?
-        @amount = (@donation['amount'].to_f / 100.0) / @donation['total_installments'].to_f
-        @contact_email = @donation['contact_email']
-        @contact_first_name = @donation['contact_first_name']
-        @contact_last_name = @donation['contact_last_name']
-        if @donation['installments'].present?
-          @installments = @donation['installments'].to_i
-        end
-      end
-    elsif @donation.present?
+    if @donation.present?
       @amount = @donation['amount'].to_f / 100.0
       @contact_email = @donation['contact_email']
       @contact_first_name = @donation['contact_first_name']
@@ -39,11 +29,6 @@ class DonationsController < ApplicationController
     @contact_last_name = params[:contact_last_name]
     @contact_name = @contact_first_name + " " + @contact_last_name
     @amount_in_cents = (@amount * 100).to_i
-    @installments = params[:installments].present? ? params[:installments].to_i : nil
-
-    if @installments.present?
-      @installment_amount = @amount / @installments
-    end
 
     respond_to do |format|
       format.turbo_stream do
@@ -73,26 +58,13 @@ class DonationsController < ApplicationController
     masjid = masjid_result
 
     # Step 4: Process payment
-    if params[:installments].present?
-      installment_duration = params[:installments].to_i
-      customer = create_stripe_customer(params[:contact_email])
+    payment_result = process_stripe_payment(amount, masjid)
+    return payment_result if payment_result.is_a?(ActionController::Base)
 
-      # Create a subscription instead of multiple payment intents
-      subscription_result = create_stripe_subscription(masjid, customer, amount, installment_duration)
-      return subscription_result if subscription_result.is_a?(ActionController::Base)
+    payment_intent = payment_result
 
-      subscription = subscription_result
-
-      handle_subscription_creation(subscription)
-    else
-      payment_result = process_stripe_payment(amount, masjid)
-      return payment_result if payment_result.is_a?(ActionController::Base)
-
-      payment_intent = payment_result
-
-      # Step 5: Create donation record
-      handle_donation_creation(payment_intent)
-    end
+    # Step 5: Create donation record
+    handle_donation_creation(payment_intent)
 
   rescue Stripe::StripeError => e
     handle_stripe_error(e)
@@ -161,63 +133,6 @@ class DonationsController < ApplicationController
     )
   end
 
-  def create_stripe_subscription(masjid, customer, amount, installment_months)
-    # Calculate monthly amount and platform fee
-    monthly_amount = (amount / installment_months).round
-    platform_fee = 3.9
-
-    # Create a product for this donation plan
-    # Create product on masjid's Stripe account
-    product = Stripe::Product.create({
-      name: "Monthly Donation Plan",
-      type: 'service'
-    })
-
-    # Create price on masjid's Stripe account
-    price = Stripe::Price.create({
-      product: product.id,
-      unit_amount: monthly_amount,
-      currency: 'usd',
-      recurring: {
-        interval: 'month',
-        interval_count: 1
-      }
-    })
-
-    # Attach payment method to customer on masjid's account
-    Stripe::PaymentMethod.attach(params[:payment_method], { 
-      customer: customer.id 
-    })
-
-    # Set default payment method on masjid's account
-    Stripe::Customer.update(customer.id, {
-      invoice_settings: {
-        default_payment_method: params[:payment_method],
-      }
-    })
-
-    # Create subscription on masjid's account
-    subscription = Stripe::Subscription.create({
-      customer: customer.id,
-      items: [{ price: price.id }],
-      metadata: {
-        amount: amount,
-        total_installments: installment_months,
-        masjid_id: params[:masjid_id],
-        fundraiser_id: params[:fundraiser_id],
-        contact_email: params[:contact_email],
-        contact_first_name: params[:contact_first_name],
-        contact_last_name: params[:contact_last_name],
-        fee: platform_fee
-      },
-      application_fee_percent: platform_fee,
-      transfer_data: {
-        destination: masjid,
-      },
-      cancel_at: (Time.now + (installment_months * 30 * 24 * 60 * 60)).to_i
-    })
-  end
-
   def handle_donation_creation(payment_intent)
     Rails.logger.debug "Payment intent: #{payment_intent.metadata.inspect}"
     if payment_intent.status == 'succeeded'
@@ -228,14 +143,6 @@ class DonationsController < ApplicationController
     else
       redirect_to payment_confirmation_masjid_fundraiser_donations_path(error_message: 'Payment failed')
     end
-  end
-
-  def handle_subscription_creation(subscription)
-    redirect_to payment_confirmation_masjid_fundraiser_donations_path(
-      success: true,
-      donation: subscription.metadata.to_h,
-      subscription: true
-    )
   end
 
   def refund_payment(payment_intent_id)

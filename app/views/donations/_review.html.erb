@@ -14,17 +14,6 @@
                 <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Name</dt>
                 <dd class="text-base font-medium text-gray-900 dark:text-white"><%= @contact_name %></dd>
               </dl>
-              <% if @installments.present? %>
-                <dl class="flex items-center justify-between gap-4">
-                  <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Installments</dt>
-                  <dd class="text-base font-medium text-gray-900 dark:text-white"><%= @installments %></dd>
-                </dl>
-                <dl class="flex items-center justify-between gap-4">
-                  <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Installment Amount</dt>
-                  <dd class="text-base font-medium text-gray-900 dark:text-white"><%= number_to_currency(@installment_amount) %></dd>
-                </dl>
-              <% end %>
-              
               <dl class="flex items-center justify-between gap-4">
                 <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Platform and Service fee</dt>
                 <dd data-donation-target="fees" class="text-base font-medium text-gray-900 dark:text-white"></dd>
@@ -54,7 +43,6 @@
         <%= form.hidden_field :contact_email, value: @contact_email %>
         <%= form.hidden_field :contact_last_name, value: @contact_last_name %>
         <%= form.hidden_field :contact_first_name, value: @contact_first_name %>
-        <%= form.hidden_field :installments, value: @installments %>
         <%= form.submit "Pay now", class: "flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4  focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" %>
       <% end %>
     </turbo-frame>
