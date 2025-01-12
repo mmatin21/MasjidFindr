@@ -7,9 +7,9 @@ class GraphQlService
   if Rails.env.development?
     BASE_URL = 'http://localhost:3001/graphql'
   else
-    BASE_URL = 'https://mosqueapp-test.onrender.com/graphql'
+    BASE_URL = 'https://mymasjidhub.onrender.com/graphql'
   end
-  
+
   class << self
     private
 
