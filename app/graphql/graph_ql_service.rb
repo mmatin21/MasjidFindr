@@ -4,8 +4,12 @@ require 'uri'
 require 'json'
 
 class GraphQlService
-  BASE_URL = 'https://mosqueapp-test.onrender.com/graphql'
-
+  if Rails.env.development?
+    BASE_URL = 'http://localhost:3001/graphql'
+  else
+    BASE_URL = 'https://mosqueapp-test.onrender.com/graphql'
+  end
+  
   class << self
     private
 
