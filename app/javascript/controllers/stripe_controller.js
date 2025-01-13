@@ -17,10 +17,8 @@ export default class extends Controller {
     this.elements = this.stripe.elements({ appearance, clientSecret });
     const options = {
       layout: {
-        type: 'accordion',
-        defaultCollapsed: false,
-        radios: false,
-        spacedAccordionItems: true
+        type: 'tabs',
+        defaultCollapsed: true,
       }
     };
   
