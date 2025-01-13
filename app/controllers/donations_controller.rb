@@ -1,6 +1,5 @@
 class DonationsController < ApplicationController
-  Stripe.api_key = Rails.application.credentials.stripe[:secret_key] # If you're using credentials
-
+  before_action :set_stripe_api_key
   def new
     @fundraiser_id = params[:fundraiser_id]
     Rails.logger.debug "Fundraiser: #{params}"
@@ -8,16 +7,16 @@ class DonationsController < ApplicationController
 
   def payment_confirmation
     # Use session or params to pass relevant data
-    @success = params[:success] == "true"
+    @success = params[:success] == 'true'
     @error_message = params[:error_message]
     @donation = params[:donation] # If needed, retrieve donation details
 
-    if @donation.present?
-      @amount = @donation['amount'].to_f / 100.0
-      @contact_email = @donation['contact_email']
-      @contact_first_name = @donation['contact_first_name']
-      @contact_last_name = @donation['contact_last_name']
-    end
+    return unless @donation.present?
+
+    @amount = @donation['amount'].to_f / 100
+    @contact_email = @donation['contact_email']
+    @contact_first_name = @donation['contact_first_name']
+    @contact_last_name = @donation['contact_last_name']
   end
 
   def review
@@ -27,21 +26,30 @@ class DonationsController < ApplicationController
     @contact_email = params[:contact_email]
     @contact_first_name = params[:contact_first_name]
     @contact_last_name = params[:contact_last_name]
-    @contact_name = @contact_first_name + " " + @contact_last_name
+    @contact_name = @contact_first_name + ' ' + @contact_last_name
     @amount_in_cents = (@amount * 100).to_i
 
-    respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.update(
-          "donation_form",
-          partial: "donations/review"
-        )
-      end
-    end
+    payment_intent = get_payment_intent
+    @client_secret = payment_intent.client_secret
+    session[:payment_intent_id] = payment_intent.id
   end
 
   def create
-    # Step 1: Parameter validation
+    payment_intent_id = session[:payment_intent_id]
+    session.delete(:payment_intent_id)
+    Rails.logger.debug "Payment intent ID: #{payment_intent_id}"
+
+    payment_intent = retrieve_payment_intent(payment_intent_id)
+    handle_donation_creation(payment_intent)
+  rescue Stripe::StripeError => e
+    handle_stripe_error(e)
+  rescue StandardError => e
+    handle_general_error(e)
+  end
+
+  private
+
+  def get_payment_intent
     validation_result = validate_donation_params
     return validation_result if validation_result
 
@@ -57,39 +65,38 @@ class DonationsController < ApplicationController
 
     masjid = masjid_result
 
-    # Step 4: Process payment
-    payment_result = process_stripe_payment(amount, masjid)
+    fee_result = process_fee
+    return fee_result if fee_result.is_a?(ActionController::Base)
+
+    fee = fee_result
+
+    payment_result = create_stripe_payment_intent(amount, masjid, fee)
     return payment_result if payment_result.is_a?(ActionController::Base)
 
-    payment_intent = payment_result
-
-    # Step 5: Create donation record
-    handle_donation_creation(payment_intent)
-
-  rescue Stripe::StripeError => e
-    handle_stripe_error(e)
-  rescue StandardError => e
-    handle_general_error(e)
+    payment_result
   end
 
-  private
-
   def validate_donation_params
-    required_params = [:amount, :masjid_id, :fundraiser_id, :payment_method]
+    required_params = %i[amount masjid_id fundraiser_id]
 
     missing_params = required_params.select { |param| params[param].blank? }
 
-    if missing_params.any?
-      redirect_to root_path, alert: "Missing required parameters: #{missing_params.join(', ')}"
-    end
+    nil unless missing_params.any?
   end
 
   def process_amount
     amount = (params[:amount].to_f * 100).to_i
     if amount <= 0
-      return redirect_to new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]), alert: 'Invalid donation amount'
+      return redirect_to new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]),
+                         alert: 'Invalid donation amount'
     end
+
     amount
+  end
+
+  def process_fee
+    amount_in_cents = (params[:amount].to_f * 100).to_i
+    ((amount_in_cents * 0.039) + 30).round
   end
 
   def fetch_and_validate_masjid
@@ -100,19 +107,17 @@ class DonationsController < ApplicationController
     end
 
     masjid = masjid_data['data']['masjidById'][0]['stripeAccountId']
-    unless masjid.present?
-      return redirect_to root_path, alert: 'Masjid not configured for payments'
-    end
+    Rails.logger.debug "Masjid: #{masjid}"
+    return redirect_to root_path, alert: 'Masjid not configured for payments' unless masjid.present?
 
     masjid
   end
 
-  def process_stripe_payment(amount, masjid)
-    # Calculate platform fee (1%) - amount is in cents
-    platform_fee = ((amount * 0.039) + 30).round
+  def create_stripe_payment_intent(amount, masjid, fee)
     Stripe::PaymentIntent.create(
       amount: amount,
       currency: 'usd',
+      payment_method_types: %w[card us_bank_account],
       metadata: {
         amount: amount,
         masjid_id: params[:masjid_id],
@@ -120,17 +125,17 @@ class DonationsController < ApplicationController
         contact_email: params[:contact_email],
         contact_first_name: params[:contact_first_name],
         contact_last_name: params[:contact_last_name],
-        fee: platform_fee
+        fee: fee
       },
-      payment_method: params[:payment_method],
-      confirmation_method: 'manual',
-      confirm: true,
-      application_fee_amount: platform_fee,
+      application_fee_amount: fee,
       transfer_data: {
-        destination: masjid,
-      },
-      return_url: masjid_fundraiser_url(params[:masjid_id], params[:fundraiser_id])
+        destination: masjid
+      }
     )
+  end
+
+  def retrieve_payment_intent(payment_intent_id)
+    Stripe::PaymentIntent.retrieve(payment_intent_id)
   end
 
   def handle_donation_creation(payment_intent)
@@ -157,9 +162,7 @@ class DonationsController < ApplicationController
     redirect_to payment_confirmation_masjid_fundraiser_donations_path(error: error.message)
   end
 
-  def create_stripe_customer(email)
-    Stripe::Customer.create({
-      email: email
-    })
+  def set_stripe_api_key
+    Stripe.api_key = Rails.application.credentials.stripe[:secret_key] # If you're using credentials
   end
 end

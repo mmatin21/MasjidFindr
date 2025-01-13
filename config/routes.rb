@@ -4,16 +4,17 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "articles#index"
 
-  resources :masjids, only: [:index, :show] do
+  resources :masjids, only: %i[index show] do
     resources :fundraisers, only: [:show] do
-      resources :donations, only: [:new, :create] do
+      resources :donations, only: %i[new create] do
         collection do
-          post :review
+          get :review
           get :payment_confirmation
+          post :create_payment_intent
         end
       end
     end
   end
   post '/webhooks/stripe', to: 'webhooks#stripe'
-  root "masjids#index"
+  root 'masjids#index'
 end
