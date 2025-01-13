@@ -1,0 +1,48 @@
+<section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+  <div class="mx-auto max-w-xl px-4 sm:px-0" data-controller="donation">
+    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl md:mb-8">Confirm and Pay</h2>
+    <%= form_with url: masjid_fundraiser_donations_path(@masjid_id, @fundraiser_id), method: :post, data: { controller: "stripe", action: "submit->stripe#handleSubmit", stripe_target: "form", turbo: "false" }, class: "mx-auto max-w-xl space-y-6" do |form| %>
+      <div class="mt-6 grow sm:mt-8 lg:mt-0">
+        <div  class="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
+          <div class="space-y-2">
+            <dl class="flex items-center justify-between gap-4">
+              <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Email</dt>
+              <dd class="text-base font-medium text-gray-900 dark:text-white"><%= @contact_email %></dd>
+            </dl>
+            <dl class="flex items-center justify-between gap-4">
+              <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Name</dt>
+              <dd class="text-base font-medium text-gray-900 dark:text-white"><%= @contact_name %></dd>
+            </dl>
+            <dl class="flex items-center justify-between gap-4">
+              <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Platform and Service fee</dt>
+              <dd data-donation-target="fees" class="text-base font-medium text-gray-900 dark:text-white"></dd>
+            </dl>
+            <dl class="flex items-center justify-between gap-4">
+              <dt class="text-base font-normal text-gray-500 dark:text-gray-400">Masjid Receives</dt>
+              <dd class="text-base font-medium text-green-500" data-donation-target="minus"></dd>
+            </dl>
+            <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+              <dt class="text-base font-bold text-gray-900 dark:text-white">Donation Total</dt>
+              <dd id="donation-total" class="text-base font-bold text-gray-900 dark:text-white" data-donation-target="total"></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+      <div class="mb-6">
+        <label for="card-element" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Card Details*</label>
+        <div id="card-element" data-stripe-target="cardElement" class="rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800"></div>
+        <div id="card-errors" class="text-red-500 text-sm mt-2" role="alert"></div>
+        <%# <div id="express-checkout-button" data-stripe-target="expressCheckoutButton" class="mb-41"> %>
+        <!-- A Stripe Payment Request Button will be inserted here -->
+        <%# </div> %>
+      </div>
+      <%= form.hidden_field :amount, value: @amount, data: { donation_target: "amount", action: "input->donation#updateTotal" } %>
+      <%= form.hidden_field :amount_in_cents, value: @amount_in_cents, data: { stripe_target: "amount" } %>
+      <%= form.hidden_field :contact_email, value: @contact_email %>
+      <%= form.hidden_field :contact_last_name, value: @contact_last_name %>
+      <%= form.hidden_field :contact_first_name, value: @contact_first_name %>
+      <%= form.hidden_field :client_secret, value: @client_secret, data: { stripe_target: "clientSecret" } %>
+      <%= form.submit "Pay now", class: "flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4  focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" %>
+    <% end %>
+  </div>
+</section>

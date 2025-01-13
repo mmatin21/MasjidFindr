@@ -2,90 +2,60 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="stripe"
 export default class extends Controller {
-  static targets = ["form", "cardElement", "errorContainer", "expressCheckoutButton", "amount"]
+  static targets = ["form", "cardElement", "errorContainer", "amount", "clientSecret"]
 
   connect() {
-    console.log("hello world")
-    this.stripe = Stripe(stripePublishableKey); // Your publishable key
-    this.elements = this.stripe.elements();
-    this.card = this.elements.create("card", {
-      style: {
-        base: {
-          color: "#9ca3af", // dark:text-white equivalent
-          fontFamily: "'Inter', sans-serif", // Matches Tailwind's default font
-          "::placeholder": {
-            color: "#9ca3af", // dark:placeholder:text-gray-400 equivalent
-          },
-        },
-        invalid: {
-          color: "#ef4444", // Red for invalid text
-        }
-      },
-    });
-    this.card.mount(this.cardElementTarget);
-    
-    this.card.on("change", (event) => {
-      const displayError = document.getElementById("card-errors");
-      if (event.error) {
-        displayError.textContent = event.error.message;
-      } else {
-        displayError.textContent = "";
-      }
-    });
-
-    // this.showExpressCheckout()
-
-    // Adding Turbo Stream support
-
+    this.initializeStripe()
+    console.log(this.clientSecretTarget.value)
   }
 
-  showExpressCheckout() {
-    const amountInCents = parseInt(this.amountTarget.value, 10);
+  async initializeStripe() {
+    this.stripe = Stripe(stripePublishableKey);
 
-    if (amountInCents > 0 && !isNaN(amountInCents)) {
-      // Unmount existing element if it exists
-      if (this.expressCheckoutElement) {
-        this.expressCheckoutElement.unmount();
+    const clientSecret = this.clientSecretTarget.value;
+    const appearance = this.getAppearance();
+    this.elements = this.stripe.elements({ appearance, clientSecret });
+    const options = {
+      layout: {
+        type: 'tabs',
+        defaultCollapsed: true,
       }
-      
-      const elements = this.stripe.elements({
-        mode: 'payment',
-        amount: amountInCents,
-        currency: 'usd'
-      });
-      
-      this.expressCheckoutElement = elements.create('expressCheckout');
-      this.expressCheckoutElement.mount(this.expressCheckoutButtonTarget);
-    } else {
-      if (this.expressCheckoutElement) {
-        this.expressCheckoutElement.unmount();
-      }
-    }
+    };
+  
+
+    this.paymentElement = this.elements.create("payment", options);
+    this.paymentElement.mount(this.cardElementTarget);
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", this.updateTheme.bind(this));
   }
-
-
-
   // Handle form submission
   async handleSubmit(event) {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
 
-    // Create a payment method
-    const { error, paymentMethod } = await this.stripe.createPaymentMethod('card', this.card);
+    const { error } = await this.stripe.confirmPayment({
+      elements: this.elements, // Use the elements instance
+      redirect: "if_required",
+    });
 
     if (error) {
-      // Display error in the form
       this.errorContainerTarget.textContent = error.message;
     } else {
-      // Add the payment method ID to the form as a hidden input
-      const paymentMethodInput = document.createElement('input');
-      paymentMethodInput.type = 'hidden';
-      paymentMethodInput.name = 'payment_method';
-      paymentMethodInput.value = paymentMethod.id;
-      this.formTarget.appendChild(paymentMethodInput);
-
-      // Submit the form after attaching the payment method
-      console.log('Submitting form with payment method:', paymentMethod.id)
-      this.formTarget.submit();
+      // Payment succeeded, and the user will be redirected to the `return_url`.
+      console.log("Payment confirmed!");
     }
+    this.formTarget.submit();
+  }
+
+  getAppearance() {
+    const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return { theme: prefersDarkScheme ? "night" : "stripe" };
+  }
+
+  updateTheme(event) {
+    const newAppearance = { theme: event.matches ? "night" : "stripe" };
+    // Remount the Payment Element with the updated theme
+    this.paymentElement.update({ appearance: newAppearance });
   }
 }
