@@ -117,6 +117,7 @@ class DonationsController < ApplicationController
     Stripe::PaymentIntent.create(
       amount: amount,
       currency: 'usd',
+      payment_method_types: %w[card us_bank_account],
       metadata: {
         amount: amount,
         masjid_id: params[:masjid_id],

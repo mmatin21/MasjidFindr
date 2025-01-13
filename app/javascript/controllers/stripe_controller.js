@@ -13,11 +13,24 @@ export default class extends Controller {
     this.stripe = Stripe(stripePublishableKey);
 
     const clientSecret = this.clientSecretTarget.value;
-    this.elements = this.stripe.elements({ clientSecret });
-    const appearance = { theme: "stripe" };
+    const appearance = this.getAppearance();
+    this.elements = this.stripe.elements({ appearance, clientSecret });
+    const options = {
+      layout: {
+        type: 'accordion',
+        defaultCollapsed: false,
+        radios: false,
+        spacedAccordionItems: true
+      }
+    };
+  
 
-    this.paymentElement = this.elements.create("payment", { appearance });
+    this.paymentElement = this.elements.create("payment", options);
     this.paymentElement.mount(this.cardElementTarget);
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", this.updateTheme.bind(this));
   }
   // Handle form submission
   async handleSubmit(event) {
@@ -35,5 +48,16 @@ export default class extends Controller {
       console.log("Payment confirmed!");
     }
     this.formTarget.submit();
+  }
+
+  getAppearance() {
+    const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return { theme: prefersDarkScheme ? "night" : "stripe" };
+  }
+
+  updateTheme(event) {
+    const newAppearance = { theme: event.matches ? "night" : "stripe" };
+    // Remount the Payment Element with the updated theme
+    this.paymentElement.update({ appearance: newAppearance });
   }
 }
