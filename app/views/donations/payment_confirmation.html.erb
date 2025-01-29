@@ -2,6 +2,8 @@
   <div class="mx-auto max-w-2xl px-4 2xl:px-0">
     <% if @success %>
       <%= render 'donations/success', locals: { donation: @donation } %>
+    <% elsif @processing %>
+      <%= render 'donations/processing', locals: { donation: @donation } %>
     <% else %>
       <%= render 'donations/error', locals: { error: params[:error_message] } %>
     <% end %>

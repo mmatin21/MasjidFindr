@@ -8,6 +8,7 @@ class DonationsController < ApplicationController
   def payment_confirmation
     # Use session or params to pass relevant data
     @success = params[:success] == 'true'
+    @processing = params[:processing] == 'true'
     @error_message = params[:error_message]
     @donation = params[:donation] # If needed, retrieve donation details
 
@@ -50,9 +51,16 @@ class DonationsController < ApplicationController
 
   def handle_donation_creation(payment_intent)
     Rails.logger.debug "Payment intent: #{payment_intent.metadata.inspect}"
+    Rails.logger.debug "Payment intent status: #{payment_intent.status}"
+
     if payment_intent.status == 'succeeded'
       redirect_to payment_confirmation_masjid_fundraiser_donations_path(
         success: true,
+        donation: payment_intent.metadata.to_h
+      )
+    elsif payment_intent.status == 'processing'
+      redirect_to payment_confirmation_masjid_fundraiser_donations_path(
+        processing: true,
         donation: payment_intent.metadata.to_h
       )
     else
