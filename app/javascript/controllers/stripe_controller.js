@@ -2,19 +2,26 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="stripe"
 export default class extends Controller {
-  static targets = ["form", "cardElement", "errorContainer", "amount", "clientSecret"]
+  static targets = ["form", "cardElement", "errorContainer", "amount", "masjidId", "fundraiserId", "contactEmail", "contactLastName", "contactFirstName"]
 
   connect() {
     this.initializeStripe()
-    console.log(this.clientSecretTarget.value)
   }
 
   async initializeStripe() {
-    this.stripe = Stripe(stripePublishableKey);
+    const masjidId = this.masjidIdTarget.value;
+    const fundraiserId = this.fundraiserIdTarget.value;
+    const amount = this.amountTarget.value;
+    const email = this.contactEmailTarget.value;
+    const firstName = this.contactFirstNameTarget.value;
+    const lastName = this.contactLastNameTarget.value;
 
-    const clientSecret = this.clientSecretTarget.value;
+    
+    this.stripe = Stripe(stripePublishableKey);
+    const response = await fetch(`/payment_intents/get_payment_intent?masjid_id=${masjidId}&fundraiser_id=${fundraiserId}&amount=${amount}&contact_email=${email}&contact_first_name=${firstName}&contact_last_name=${lastName}`)
+    const { client_secret } = await response.json()
     const appearance = this.getAppearance();
-    this.elements = this.stripe.elements({ appearance, clientSecret });
+    this.elements = this.stripe.elements({ appearance, clientSecret: client_secret });
     const options = {
       layout: {
         type: 'tabs',
@@ -34,7 +41,7 @@ export default class extends Controller {
   async handleSubmit(event) {
     event.preventDefault();
 
-    const { error } = await this.stripe.confirmPayment({
+    const { paymentIntent, error } = await this.stripe.confirmPayment({
       elements: this.elements, // Use the elements instance
       redirect: "if_required",
     });
@@ -45,6 +52,19 @@ export default class extends Controller {
       // Payment succeeded, and the user will be redirected to the `return_url`.
       console.log("Payment confirmed!");
     }
+
+    let existingInput = this.formTarget.querySelector("input[name='payment_intent_id']");
+    if (existingInput) {
+      existingInput.value = paymentIntent.id;
+    } 
+    else {
+      const hiddenInput = document.createElement("input");
+      hiddenInput.type = "hidden";
+      hiddenInput.name = "payment_intent_id";
+      hiddenInput.value = paymentIntent.id;
+      this.formTarget.appendChild(hiddenInput);
+    }
+
     this.formTarget.submit();
   }
 

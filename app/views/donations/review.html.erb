@@ -36,12 +36,12 @@
         <!-- A Stripe Payment Request Button will be inserted here -->
         <%# </div> %>
       </div>
-      <%= form.hidden_field :amount, value: @amount, data: { donation_target: "amount", action: "input->donation#updateTotal" } %>
-      <%= form.hidden_field :amount_in_cents, value: @amount_in_cents, data: { stripe_target: "amount" } %>
-      <%= form.hidden_field :contact_email, value: @contact_email %>
-      <%= form.hidden_field :contact_last_name, value: @contact_last_name %>
-      <%= form.hidden_field :contact_first_name, value: @contact_first_name %>
-      <%= form.hidden_field :client_secret, value: @client_secret, data: { stripe_target: "clientSecret" } %>
+      <%= form.hidden_field :amount, value: @amount, data: { donation_target: "amount", action: "input->donation#updateTotal", stripe_target: "amount" } %>
+      <%= form.hidden_field :masjid_id, value: @masjid_id, data: { stripe_target: "masjidId" } %>
+      <%= form.hidden_field :fundraiser_id, value: @fundraiser_id, data: { stripe_target: "fundraiserId" } %>  
+      <%= form.hidden_field :contact_email, value: @contact_email, data: { stripe_target: "contactEmail" } %>
+      <%= form.hidden_field :contact_last_name, value: @contact_last_name, data: { stripe_target: "contactLastName" } %>  
+      <%= form.hidden_field :contact_first_name, value: @contact_first_name, data: { stripe_target: "contactFirstName" } %>
       <%= form.submit "Pay now", class: "flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4  focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" %>
     <% end %>
   </div>

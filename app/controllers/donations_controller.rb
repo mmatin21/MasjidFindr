@@ -28,15 +28,10 @@ class DonationsController < ApplicationController
     @contact_last_name = params[:contact_last_name]
     @contact_name = @contact_first_name + ' ' + @contact_last_name
     @amount_in_cents = (@amount * 100).to_i
-
-    payment_intent = get_payment_intent
-    @client_secret = payment_intent.client_secret
-    session[:payment_intent_id] = payment_intent.id
   end
 
   def create
-    payment_intent_id = session[:payment_intent_id]
-    session.delete(:payment_intent_id)
+    payment_intent_id = params[:payment_intent_id]
     Rails.logger.debug "Payment intent ID: #{payment_intent_id}"
 
     payment_intent = retrieve_payment_intent(payment_intent_id)
@@ -48,91 +43,6 @@ class DonationsController < ApplicationController
   end
 
   private
-
-  def get_payment_intent
-    validation_result = validate_donation_params
-    return validation_result if validation_result
-
-    # Step 2: Amount processing and validation
-    amount_result = process_amount
-    return amount_result if amount_result.is_a?(ActionController::Base)
-
-    amount = amount_result
-
-    # Step 3: Masjid validation and retrieval
-    masjid_result = fetch_and_validate_masjid
-    return masjid_result if masjid_result.is_a?(ActionController::Base)
-
-    masjid = masjid_result
-
-    fee_result = process_fee
-    return fee_result if fee_result.is_a?(ActionController::Base)
-
-    fee = fee_result
-
-    payment_result = create_stripe_payment_intent(amount, masjid, fee)
-    return payment_result if payment_result.is_a?(ActionController::Base)
-
-    payment_result
-  end
-
-  def validate_donation_params
-    required_params = %i[amount masjid_id fundraiser_id]
-
-    missing_params = required_params.select { |param| params[param].blank? }
-
-    nil unless missing_params.any?
-  end
-
-  def process_amount
-    amount = (params[:amount].to_f * 100).to_i
-    if amount <= 0
-      return redirect_to new_masjid_fundraiser_donation_path(params[:masjid_id], params[:fundraiser_id]),
-                         alert: 'Invalid donation amount'
-    end
-
-    amount
-  end
-
-  def process_fee
-    amount_in_cents = (params[:amount].to_f * 100).to_i
-    ((amount_in_cents * 0.039) + 30).round
-  end
-
-  def fetch_and_validate_masjid
-    masjid_data = GraphQlService.fetch_masjid_by_id(params[:masjid_id])
-
-    unless masjid_data && masjid_data['data'] && masjid_data['data']['masjidById']&.first
-      return redirect_to root_path, alert: 'Invalid masjid'
-    end
-
-    masjid = masjid_data['data']['masjidById'][0]['stripeAccountId']
-    Rails.logger.debug "Masjid: #{masjid}"
-    return redirect_to root_path, alert: 'Masjid not configured for payments' unless masjid.present?
-
-    masjid
-  end
-
-  def create_stripe_payment_intent(amount, masjid, fee)
-    Stripe::PaymentIntent.create(
-      amount: amount,
-      currency: 'usd',
-      payment_method_types: %w[card us_bank_account],
-      metadata: {
-        amount: amount,
-        masjid_id: params[:masjid_id],
-        fundraiser_id: params[:fundraiser_id],
-        contact_email: params[:contact_email],
-        contact_first_name: params[:contact_first_name],
-        contact_last_name: params[:contact_last_name],
-        fee: fee
-      },
-      application_fee_amount: fee,
-      transfer_data: {
-        destination: masjid
-      }
-    )
-  end
 
   def retrieve_payment_intent(payment_intent_id)
     Stripe::PaymentIntent.retrieve(payment_intent_id)
@@ -148,10 +58,6 @@ class DonationsController < ApplicationController
     else
       redirect_to payment_confirmation_masjid_fundraiser_donations_path(error_message: 'Payment failed')
     end
-  end
-
-  def refund_payment(payment_intent_id)
-    Stripe::Refund.create(payment_intent: payment_intent_id)
   end
 
   def handle_stripe_error(error)

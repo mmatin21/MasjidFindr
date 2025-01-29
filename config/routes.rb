@@ -16,5 +16,11 @@ Rails.application.routes.draw do
     end
   end
   post '/webhooks/stripe', to: 'webhooks#stripe'
+
+  resources :payment_intents do
+    collection do
+      get :get_payment_intent
+    end
+  end
   root 'masjids#index'
 end
