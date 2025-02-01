@@ -4,7 +4,6 @@
       <h2 class="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl dark:text-white">
         <%=  @fundraiser['name'] %>
       </h2>
-      <%= link_to "Back to masjid", masjid_path(params[:masjid_id]), class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>
     </div>
     <div class="grid gap-4 py-10 mb-4 sm:mb-5 sm:grid-cols-3 sm:gap-6 md:gap-12">
       <!-- Column -->
@@ -38,5 +37,6 @@
     </div>
     <div class="flex items-center space-x-4">
       <%= link_to 'Donate Now', new_masjid_fundraiser_donation_path(@fundraiser['masjidId'], @fundraiser['id'] ), class: "py-2.5 px-5 text-white border border-gray-200 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium dark:border-gray-600 rounded-lg text-sm dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" %>
+      <%= link_to "Back to masjid", masjid_path(params[:masjid_id]), class: "py-2.5 px-5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>
     </div>
   </section>
