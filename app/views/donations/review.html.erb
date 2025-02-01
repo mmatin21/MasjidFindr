@@ -1,6 +1,13 @@
-<section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-  <div class="mx-auto max-w-xl px-4 sm:px-0" data-controller="donation">
-    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl md:mb-8">Confirm and Pay</h2>
+<section class="bg-white py-24 px-2 dark:bg-gray-900 antialiased">
+  <div class="mx-auto max-w-xl px-4 py-8 mx-auto lg:px-6 sm:py-16 lg:py-24" data-controller="donation">
+    <div class="flex items-center justify-between ">
+      <h2 class="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl dark:text-white">
+        Confirm and Pay
+      </h2>
+      <button onclick="window.history.back()" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+        Back
+      </button>
+    </div>
     <%= form_with url: masjid_fundraiser_donations_path(@masjid_id, @fundraiser_id), method: :post, data: { controller: "stripe", action: "submit->stripe#handleSubmit", stripe_target: "form", turbo: "false" }, class: "mx-auto max-w-xl space-y-6" do |form| %>
       <div class="mt-6 grow sm:mt-8 lg:mt-0">
         <div  class="space-y-4 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
@@ -38,9 +45,9 @@
       </div>
       <%= form.hidden_field :amount, value: @amount, data: { donation_target: "amount", action: "input->donation#updateTotal", stripe_target: "amount" } %>
       <%= form.hidden_field :masjid_id, value: @masjid_id, data: { stripe_target: "masjidId" } %>
-      <%= form.hidden_field :fundraiser_id, value: @fundraiser_id, data: { stripe_target: "fundraiserId" } %>  
+      <%= form.hidden_field :fundraiser_id, value: @fundraiser_id, data: { stripe_target: "fundraiserId" } %>
       <%= form.hidden_field :contact_email, value: @contact_email, data: { stripe_target: "contactEmail" } %>
-      <%= form.hidden_field :contact_last_name, value: @contact_last_name, data: { stripe_target: "contactLastName" } %>  
+      <%= form.hidden_field :contact_last_name, value: @contact_last_name, data: { stripe_target: "contactLastName" } %>
       <%= form.hidden_field :contact_first_name, value: @contact_first_name, data: { stripe_target: "contactFirstName" } %>
       <%= form.submit "Pay now", class: "flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4  focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" %>
     <% end %>

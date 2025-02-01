@@ -1,4 +1,4 @@
-<section class="bg-white dark:bg-gray-900 antialiased">
+<section class="bg-white py-24 px-2 dark:bg-gray-900 antialiased">
   <div class="max-w-screen-xl px-4 py-8 mx-auto lg:px-6 sm:py-16 lg:py-24">
     <div class="max-w-5xl">
       <h2 class="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl dark:text-white">
@@ -8,7 +8,7 @@
         Find your local Masjid. Get involved with your community. Support your community.
       </p>
       <div class="mt-4">
-        <%= form_with url: masjids_path, method: :get, class: "max-w-md mx-auto" do |f| %>   
+        <%= form_with url: masjids_path, method: :get, class: "max-w-md" do |f| %>   
           <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
           <div class="relative">
               <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">

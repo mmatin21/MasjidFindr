@@ -1,31 +1,30 @@
-<section class="bg-white dark:bg-gray-900 antialiased">
-  <div class="flex items-center justify-between max-w-screen-xl px-4 mx-auto">
-    <h2 class="p-6 text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl dark:text-white">
-      <%= @masjid_name%>
-    </h2>
-    <%= link_to "Back to Masjids", masjids_path, class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>
-  </div>
+<section class="bg-white py-24 px-2 dark:bg-gray-900 antialiased">
   <div class="max-w-screen-xl px-4 py-8 mx-auto lg:px-6 sm:py-16 lg:py-24">
-    <div class="max-w-5xl">
+    <div class="flex items-center justify-between">
+      <h2 class="text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl dark:text-white">
+        <%= @masjid_name%>
+      </h2>
+      <%= link_to "Back to masjids", masjids_path, class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" %>
     </div>
-    <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
-      <li class="me-2">
-        <%= link_to "Fundraisers", masjid_path(params[:id], fundraisers: true), class: "inline-block p-4 rounded-t-lg #{params[:fundraisers].present? ? 'active text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500' : 'hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'}"%>
-      </li>
-      <li class="me-2">
-        <%= link_to "Events", masjid_path(params[:id], events:  true), class: "inline-block p-4 rounded-t-lg #{params[:events].present? ?  'active text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500' : 'hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'}" %>
-      </li>
-      <li class="me-2">
-        <%= link_to "Prayers", masjid_path(params[:id], prayers: true), class: "inline-block p-4 rounded-t-lg #{params[:prayers].present? ?  'active text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500' : 'hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'}" %>
-      </li>
-    </ul>
+    <div class="max-w-screen-xl py-8 mx-auto lg:px-2 sm:py-16 lg:py-12">
+      <ul class="flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+        <li class="me-2">
+          <%= link_to "Fundraisers", masjid_path(params[:id], fundraisers: true), class: "inline-block p-4 rounded-t-lg #{params[:fundraisers].present? ? 'active text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500' : 'hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'}"%>
+        </li>
+        <li class="me-2">
+          <%= link_to "Events", masjid_path(params[:id], events:  true), class: "inline-block p-4 rounded-t-lg #{params[:events].present? ?  'active text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500' : 'hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'}" %>
+        </li>
+        <li class="me-2">
+          <%= link_to "Prayers", masjid_path(params[:id], prayers: true), class: "inline-block p-4 rounded-t-lg #{params[:prayers].present? ?  'active text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500' : 'hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'}" %>
+        </li>
+      </ul>
+    </div>
+    <% if params[:fundraisers].present? && @masjid_stripe_account_id %>
+      <%= render 'fundraisers', fundraisers: @fundraisers %>
+    <% elsif params[:events].present? %>
+      <%= render 'events', events: @events %>
+    <% else %>
+      <%= render 'prayers', prayers: @prayers %>
+    <% end %>
   </div>
-  <% if params[:fundraisers].present? && @masjid_stripe_account_id %>
-    <%= render 'fundraisers', fundraisers: @fundraisers %>
-  <% elsif params[:events].present? %>
-    <%= render 'events', events: @events %>
-  <% else %>
-    <%= render 'prayers', prayers: @prayers %>
-  <% end %>
-</div>
 </section>
